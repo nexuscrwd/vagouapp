@@ -27,7 +27,7 @@ export const App: React.FC = () => {
     return <AdminMasterSuite onBackToGateway={() => setCurrentView('gateway')} />;
   }
 
-  return <VagouGatewayHub onOpenAdmin={() => setCurrentView('admin')} />;
+  return <VagouGatewayHub />;
 };
 
 export default App;

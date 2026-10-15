@@ -8,57 +8,15 @@ import {
   ShieldCheck,
   ArrowRight,
   ExternalLink,
-  CheckCircle2,
   Store,
-  Phone,
   Sparkles,
-  X,
-  User,
-  Mail,
-  Lock,
-  Scissors,
 } from 'lucide-react';
 import { VagouOfficialLogo } from './VagouOfficialLogo';
+// Importação do Formulário Mestre OFICIAL da Tríade:
+import { TriadeEstablishmentMasterForm } from './TriadeEstablishmentMasterForm';
 
-export interface VagouGatewayHubProps {
-  onOpenAdmin?: () => void;
-}
-
-export const VagouGatewayHub: React.FC<VagouGatewayHubProps> = ({ onOpenAdmin }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  // Dados do Cadastro Direto
-  const [ownerName, setOwnerName] = useState('');
-  const [ownerWhatsapp, setOwnerWhatsapp] = useState('');
-  const [ownerEmail, setOwnerEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [salonName, setSalonName] = useState('');
-  const [category, setCategory] = useState('Barbearia');
-  const [cityState, setCityState] = useState('');
-
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    // Simula e valida o registro diretamente no ecossistema
-    setTimeout(() => {
-      setLoading(false);
-      setIsSuccess(true);
-    }, 800);
-  };
-
-  const resetForm = () => {
-    setIsModalOpen(false);
-    setIsSuccess(false);
-    setOwnerName('');
-    setOwnerWhatsapp('');
-    setOwnerEmail('');
-    setPassword('');
-    setSalonName('');
-    setCityState('');
-  };
+export const VagouGatewayHub: React.FC = () => {
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
   return (
     <div className="min-h-screen w-full bg-slate-950 text-slate-100 font-['Poppins'] flex flex-col justify-between selection:bg-[#20C933] selection:text-white">
@@ -67,7 +25,17 @@ export const VagouGatewayHub: React.FC<VagouGatewayHubProps> = ({ onOpenAdmin })
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <VagouOfficialLogo size="lg" />
-            <span className="font-extrabold text-white text-lg tracking-tight">VagouApp</span>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-extrabold text-white text-lg tracking-tight">VagouApp</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-[4px] bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold">
+                  Gateway Oficial
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
+                O ecossistema inteligente de vagas imediatas & gestão
+              </p>
+            </div>
           </div>
 
           <a
@@ -100,9 +68,9 @@ export const VagouGatewayHub: React.FC<VagouGatewayHubProps> = ({ onOpenAdmin })
           </p>
         </div>
 
-        {/* OS 2 CARDS */}
+        {/* CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-stretch">
-          {/* CARD 1: CLIENTES (PORTAL) */}
+          {/* CARD 1: CLIENTES */}
           <div className="bg-slate-900 border border-slate-800 hover:border-emerald-500/40 rounded-[4px] p-6 sm:p-8 flex flex-col justify-between transition-all duration-200 group relative overflow-hidden shadow-2xl">
             <div className="space-y-6">
               <div className="flex items-center justify-between">
@@ -148,7 +116,7 @@ export const VagouGatewayHub: React.FC<VagouGatewayHubProps> = ({ onOpenAdmin })
             </div>
           </div>
 
-          {/* CARD 2: ESTABELECIMENTOS (ABRE CADASTRO DIRETO NA TELA) */}
+          {/* CARD 2: ESTABELECIMENTOS (ABRE O FORMULÁRIO MESTRE OFICIAL DA TRÍADE) */}
           <div className="bg-slate-900 border border-slate-800 hover:border-emerald-500/40 rounded-[4px] p-6 sm:p-8 flex flex-col justify-between transition-all duration-200 group relative overflow-hidden shadow-2xl">
             <div className="space-y-6">
               <div className="flex items-center justify-between">
@@ -182,10 +150,10 @@ export const VagouGatewayHub: React.FC<VagouGatewayHubProps> = ({ onOpenAdmin })
             </div>
 
             <div className="pt-8 space-y-2">
-              {/* BOTAO QUE ABRE O MODAL DIRETO NA TELA */}
+              {/* BOTAO QUE ABRE O FORMULARIO MESTRE OFICIAL DA TRIADE */}
               <button
                 type="button"
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => setIsRegisterModalOpen(true)}
                 className="w-full py-3.5 px-5 rounded-[4px] bg-white hover:bg-slate-200 text-slate-950 font-bold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-98"
               >
                 <span>Criar Meu Negócio</span>
@@ -208,204 +176,17 @@ export const VagouGatewayHub: React.FC<VagouGatewayHubProps> = ({ onOpenAdmin })
         </div>
       </main>
 
-      {/* 🏢 MODAL DE CADASTRO DIRETO (SEM ABRIR OUTRA ABA) */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-          <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-[4px] p-6 sm:p-8 shadow-2xl relative my-auto animate-fadeIn">
-            {/* Fechar */}
-            <button
-              type="button"
-              onClick={resetForm}
-              className="absolute top-4 right-4 p-2 rounded-[4px] text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {isSuccess ? (
-              /* TELA DE SUCESSO */
-              <div className="text-center space-y-5 py-4">
-                <div className="w-16 h-16 rounded-[4px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto shadow-xl">
-                  <CheckCircle2 className="w-8 h-8 text-emerald-400" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white">Estabelecimento Cadastrado!</h3>
-                  <p className="text-xs text-slate-300 mt-1">
-                    O salão <strong>"{salonName}"</strong> foi registrado com sucesso.
-                  </p>
-                </div>
-
-                <div className="pt-2">
-                  <a
-                    href="https://seunegocio.vagouapp.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-3 px-4 rounded-[4px] bg-[#20C933] hover:bg-[#1bb32d] text-white font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20"
-                  >
-                    <span className="text-white font-bold">Ir para o Meu Negócio</span>
-                    <ArrowRight className="w-4 h-4 text-white" />
-                  </a>
-                </div>
-              </div>
-            ) : (
-              /* FORMULÁRIO COMPLETO */
-              <form onSubmit={handleRegister} className="space-y-4">
-                <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
-                  <VagouOfficialLogo size="md" />
-                  <div>
-                    <h3 className="font-bold text-white text-base">Cadastro de Estabelecimento</h3>
-                    <p className="text-xs text-slate-400">Preencha os dados do seu salão ou barbearia</p>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Nome do Estabelecimento *
-                  </label>
-                  <div className="flex items-center bg-slate-950 border border-slate-800 rounded-[4px] px-3 py-2 text-sm text-white">
-                    <Scissors className="w-4 h-4 text-slate-500 mr-2" />
-                    <input
-                      type="text"
-                      required
-                      placeholder="Ex: Barber Shop Imperial"
-                      value={salonName}
-                      onChange={(e) => setSalonName(e.target.value)}
-                      className="w-full bg-transparent outline-none placeholder-slate-600"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Categoria *</label>
-                    <select
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-[4px] px-3 py-2 text-sm text-white outline-none"
-                    >
-                      <option value="Barbearia">Barbearia</option>
-                      <option value="Salão de Beleza">Salão de Beleza</option>
-                      <option value="Esmalteria">Esmalteria</option>
-                      <option value="Estética / Spa">Estética / Spa</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Cidade / UF *</label>
-                    <div className="flex items-center bg-slate-950 border border-slate-800 rounded-[4px] px-3 py-2 text-sm text-white">
-                      <MapPin className="w-4 h-4 text-slate-500 mr-2" />
-                      <input
-                        type="text"
-                        required
-                        placeholder="Ex: São Paulo / SP"
-                        value={cityState}
-                        onChange={(e) => setCityState(e.target.value)}
-                        className="w-full bg-transparent outline-none placeholder-slate-600"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Seu Nome *</label>
-                    <div className="flex items-center bg-slate-950 border border-slate-800 rounded-[4px] px-3 py-2 text-sm text-white">
-                      <User className="w-4 h-4 text-slate-500 mr-2" />
-                      <input
-                        type="text"
-                        required
-                        placeholder="Nome do responsável"
-                        value={ownerName}
-                        onChange={(e) => setOwnerName(e.target.value)}
-                        className="w-full bg-transparent outline-none placeholder-slate-600"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">WhatsApp / Celular *</label>
-                    <div className="flex items-center bg-slate-950 border border-slate-800 rounded-[4px] px-3 py-2 text-sm text-white">
-                      <Phone className="w-4 h-4 text-slate-500 mr-2" />
-                      <input
-                        type="tel"
-                        required
-                        placeholder="(11) 99999-9999"
-                        value={ownerWhatsapp}
-                        onChange={(e) => setOwnerWhatsapp(e.target.value)}
-                        className="w-full bg-transparent outline-none placeholder-slate-600"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">E-mail *</label>
-                    <div className="flex items-center bg-slate-950 border border-slate-800 rounded-[4px] px-3 py-2 text-sm text-white">
-                      <Mail className="w-4 h-4 text-slate-500 mr-2" />
-                      <input
-                        type="email"
-                        required
-                        placeholder="seu@email.com"
-                        value={ownerEmail}
-                        onChange={(e) => setOwnerEmail(e.target.value)}
-                        className="w-full bg-transparent outline-none placeholder-slate-600"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Senha *</label>
-                    <div className="flex items-center bg-slate-950 border border-slate-800 rounded-[4px] px-3 py-2 text-sm text-white">
-                      <Lock className="w-4 h-4 text-slate-500 mr-2" />
-                      <input
-                        type="password"
-                        required
-                        placeholder="Mínimo 6 dígitos"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full bg-transparent outline-none placeholder-slate-600"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-3">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-3.5 px-4 rounded-[4px] bg-[#20C933] hover:bg-[#1bb32d] text-white font-bold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20 active:scale-98"
-                  >
-                    <span className="text-white font-bold">{loading ? 'Cadastrando...' : 'Finalizar Cadastro Grátis'}</span>
-                    <ArrowRight className="w-4 h-4 text-white" />
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
+      {/* 🏢 OVERLAY QUE RENDERIZA EXCLUSIVAMENTE O TRIADE_ESTABLISHMENT_MASTER_FORM */}
+      {isRegisterModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fadeIn">
+          <TriadeEstablishmentMasterForm
+            onClose={() => setIsRegisterModalOpen(false)}
+            onSuccess={() => {
+              window.location.href = 'https://seunegocio.vagouapp.com';
+            }}
+          />
         </div>
       )}
-
-      {/* 🛡️ RODAPÉ */}
-      <footer className="w-full border-t border-slate-800/80 bg-slate-950 py-6 px-4 sm:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <div className="flex items-center gap-2">
-            <span>© {new Date().getFullYear()} VagouApp Tecnologia.</span>
-            <span className="hidden sm:inline">Todos os direitos reservados.</span>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <a
-              href="https://wa.me/5511999999999"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-emerald-400 transition flex items-center gap-1"
-            >
-              <Phone className="w-3 h-3" />
-              <span>Suporte WhatsApp</span>
-            </a>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };
