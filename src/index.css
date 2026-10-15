@@ -7,3 +7,8 @@
     color: #f8fafc;
   }
 }
+
+/* Regra absoluta de Design System: Todas as bordas arredondadas são estritamente de 4px */
+[class*="rounded"] {
+  border-radius: 4px !important;
+}

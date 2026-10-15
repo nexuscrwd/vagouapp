@@ -33,7 +33,7 @@ export const VagouOfficialLogo: React.FC<VagouOfficialLogoProps> = ({
         title={title}
         className={`inline-flex items-center gap-2 select-none shrink-0 ${onClick ? 'cursor-pointer hover:opacity-90 active:scale-95 transition' : ''} ${className}`}
       >
-        <div className="w-8 h-8 rounded-xl bg-slate-900/90 flex items-center justify-center p-1 shadow-md shadow-emerald-500/10">
+        <div className="w-8 h-8 rounded-[4px] bg-slate-900/90 flex items-center justify-center p-1 shadow-md shadow-emerald-500/10">
           <svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
             <defs>
               <linearGradient id="vGradFullSymbol" x1="0%" y1="100%" x2="100%" y2="0%">
@@ -60,7 +60,7 @@ export const VagouOfficialLogo: React.FC<VagouOfficialLogoProps> = ({
     <div
       onClick={onClick}
       title={title}
-      className={`${containerSize} rounded-xl overflow-hidden flex items-center justify-center shrink-0 bg-slate-900/90 shadow-md shadow-emerald-500/10 p-1.5 select-none ${
+      className={`${containerSize} rounded-[4px] overflow-hidden flex items-center justify-center shrink-0 bg-slate-900/90 shadow-md shadow-emerald-500/10 p-1.5 select-none ${
         onClick ? 'cursor-pointer hover:scale-105 active:scale-95 transition' : ''
       } ${className}`}
     >
