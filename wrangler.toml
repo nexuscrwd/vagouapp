@@ -1,0 +1,17 @@
+name = "vagouapp-gateway"
+compatibility_date = "2026-10-15"
+
+[site]
+bucket = "./dist"
+
+[[routes]]
+pattern = "vagouapp.com/*"
+zone_name = "vagouapp.com"
+
+[[routes]]
+pattern = "www.vagouapp.com/*"
+zone_name = "vagouapp.com"
+
+[[routes]]
+pattern = "adm.vagouapp.com/*"
+zone_name = "vagouapp.com"
