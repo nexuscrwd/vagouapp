@@ -1,7 +1,6 @@
-name = "vagouapp-gateway"
+name = "vagouapp"
 compatibility_date = "2024-09-23"
 
-# Cloudflare Workers com Static Assets Moderno (SPA)
 [assets]
 directory = "./dist"
 not_found_handling = "single-page-application"
