@@ -1,25 +1,15 @@
 name = "vagouapp-gateway"
-main = "src/worker.ts"
 compatibility_date = "2024-09-23"
 
-# Modern Cloudflare Workers Static Assets (compatível com Wrangler v3/v4)
+# Cloudflare Workers com Static Assets Moderno (SPA)
 [assets]
 directory = "./dist"
-binding = "ASSETS"
 not_found_handling = "single-page-application"
 
-# Permite teste no *.workers.dev caso o domínio ainda não esteja provisionado
-workers_dev = true
+[[routes]]
+pattern = "vagouapp.com/*"
+zone_name = "vagouapp.com"
 
-# Rotas de produção (descomente ou mantenha conforme sua zona Cloudflare)
-# [[routes]]
-# pattern = "vagouapp.com/*"
-# zone_name = "vagouapp.com"
-#
-# [[routes]]
-# pattern = "www.vagouapp.com/*"
-# zone_name = "vagouapp.com"
-#
-# [[routes]]
-# pattern = "adm.vagouapp.com/*"
-# zone_name = "vagouapp.com"
+[[routes]]
+pattern = "www.vagouapp.com/*"
+zone_name = "vagouapp.com"
