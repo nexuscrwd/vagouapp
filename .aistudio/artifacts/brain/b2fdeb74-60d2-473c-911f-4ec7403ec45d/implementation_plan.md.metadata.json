@@ -1,0 +1,6 @@
+{
+  "summary": "Plano arquitetural e de interface para o Acesso Inteligente no Gateway VagouApp (vagouapp.com). Inclui campo de busca e autocompletar por nome/slug com redirecionamento direto para seunegocio.vagouapp.com, modal de login unificado com acervo de estabelecimentos vinculados e atalhos para os apps da Tríade (pvapp, mnvapp, admvapp).",
+  "updatedAt": "2026-10-16T11:56:30.368054730Z",
+  "requestFeedback": true,
+  "userFacing": true
+}

@@ -4,6 +4,48 @@ Todas as alterações notáveis deste projeto serão documentadas neste arquivo 
 
 ---
 
+## [1.1.4] - 2026-10-18
+### Transparência do Logotipo & Limpeza Visual Estrita
+- **Remoção de Span/Botão Auxiliar:** Removido o botão e span de texto abaixo do logo no Gateway Hub (`VagouGatewayHub.tsx`), mantendo a área do topo exclusivamente dedicada à imagem do logotipo.
+- **Div de Logotipo 100% Transparente (`OfficialLogoDisplay.tsx`):**
+  - Removido fundo escuro (`bg-slate-900/95`), borda (`border-slate-800`) e sombra da `div` contêiner do logo.
+  - Aplicadas classes `bg-transparent border-0 shadow-none` para que unicamente a arte oficial do logotipo apareça sobre o background.
+- **Conexão Direta com Supabase Storage (`SupabaseLogoConfigModal.tsx`):** Modal dedicado e independente para validação e persistência da URL pública do bucket `media` sem qualquer recriação por IA.
+
+## [1.1.3] - 2026-10-16
+### Supabase Storage & Ajustes de Identidade Visual
+- **Remoção de Elemento `<p>`:** Removido o texto descritivo abaixo da moldura do logotipo no Gateway Hub (`VagouGatewayHub.tsx`), atendendo à seleção de foco do usuário.
+- **Integração com Supabase Storage (`OfficialLogoDisplay` & `VagouOfficialLogo`):**
+  - Configurado para carregar o logotipo oficial prioritariamente do bucket `media` no Supabase Storage (`vagou_logo_transparente_texto_branco.png`).
+  - Implementado fallback automático com `onError` para o asset local de alta fidelidade com texto branco sólido e checkmark em gradiente esmeralda.
+- **Script SQL de Mídia (`src/db/supabase_media_storage.sql`):** Criado script SQL completo e idempotente para criação do bucket `media`, políticas RLS públicas de leitura/restritas de escrita e tabela `public.app_media`.
+
+## [1.1.2] - 2026-10-16
+### Alinhamento Visual Oficial da Tríade (1ª Etapa de Cadastro)
+- **Componente `TriadeUserCheckStep` (`src/components/TriadeUserCheckStep.tsx`):** Implementado rigorosamente conforme a especificação visual oficial da Tríade VagouApp.
+- **Estrutura Visual:**
+  - Ícone central de usuário com container `emerald-500/10` e borda `emerald-500/30`.
+  - Título oficial: *"O estabelecimento a ser criado já possui usuário cadastrado?"*.
+  - Grade de seleção com cards oficiais: **SIM** (`bg-emerald-950/30`, borda `emerald-500/40`, texto `emerald-400`, ícone `Check`) e **NÃO** (`bg-slate-800/60`, borda `slate-700`, ícone `UserPlus`).
+  - Selo de rodapé institucional: *"Ambiente Oficial VagouApp · Governança da Tríade"* com ícone `ShieldCheck`.
+- **Integração no Embed Soberano:** Atualizado `SovereignEmbedForm.tsx` para renderizar `TriadeUserCheckStep` na etapa `'user_check'`.
+
+## [1.1.1] - 2026-10-16
+### Correção Crítica & Ajuste de Embed
+- **Componente Oficial `VagouRegisterModal`:** Criado em `src/components/VagouRegisterModal.tsx` com iframe dedicado apontando para `https://adm.vagouapp.com/embed?form=estabelecimento` (e resolução transparente em ambiente de preview/local para `/embed?form=estabelecimento`).
+- **Desacoplamento de Redirecionamento Indevido:** Corrigido o botão "Criar meu negócio" no Gateway (`VagouGatewayHub.tsx`) e no Hub de Contas (`UserBusinessHubModal.tsx`) para abrir imediatamente o modal de cadastro soberano, sem jamais redirecionar para a vitrine do salão em `seunegocio.vagouapp.com`.
+- **Roteamento Cloudflare (`wrangler.toml`):** Adicionada a rota `adm.vagouapp.com/*` na configuração de deploy dos Workers para unificar a Central Soberana.
+
+## [1.1.0] - 2026-10-16
+### Alterado & Padronizado (Diretriz da Tríade)
+- **Eliminação de Código Nativo Duplicado:** Removido o formulário local `TriadeEstablishmentMasterForm.tsx`.
+- **Implementação do Modal de Embed Oficial (`VagouRegisterModal` / `VagouMasterFormModal`):**
+  - Iframe consumindo em tempo real: `https://adm.vagouapp.com/embed?form=estabelecimento`.
+  - Escuta via `window.addEventListener('message')` para eventos `CLOSE` e `SALON_MASTER_SUCCESS`.
+- **Rota Soberana de Embed (`SovereignEmbedForm.tsx`):** Rota `/embed?form=estabelecimento` implementada na própria aplicação para servir a Central Soberana e responder via `postMessage`.
+
+---
+
 ## [1.0.0] - 2026-10-15
 ### Adicionado
 - **Gateway Hub Oficial (`vagouapp.com`):**

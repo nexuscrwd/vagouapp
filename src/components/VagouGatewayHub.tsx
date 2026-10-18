@@ -1,192 +1,235 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Building2,
-  CalendarCheck2,
-  Clock,
-  MapPin,
-  TrendingUp,
-  ShieldCheck,
   ArrowRight,
-  ExternalLink,
   Store,
-  Sparkles,
+  Layers,
+  User,
+  Upload,
+  CheckCircle,
 } from 'lucide-react';
+import { OfficialLogoDisplay } from './OfficialLogoDisplay';
 import { VagouOfficialLogo } from './VagouOfficialLogo';
-// Importação do Formulário Mestre OFICIAL da Tríade:
-import { TriadeEstablishmentMasterForm } from './TriadeEstablishmentMasterForm';
+import { VagouRegisterModal } from './VagouRegisterModal';
+import { QuickSalonLauncher } from './QuickSalonLauncher';
+import { UserBusinessHubModal } from './UserBusinessHubModal';
+import { SupabaseLogoConfigModal } from './SupabaseLogoConfigModal';
 
 export const VagouGatewayHub: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'client' | 'business'>('client');
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isHubModalOpen, setIsHubModalOpen] = useState(false);
+  const [isLogoConfigOpen, setIsLogoConfigOpen] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleFileUpload = (file: File) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const dataUrl = e.target?.result as string;
+      if (dataUrl) {
+        localStorage.setItem('vagou_official_logo_custom', dataUrl);
+        window.dispatchEvent(new Event('vagou_logo_updated'));
+        setUploadSuccess(true);
+        setTimeout(() => setUploadSuccess(false), 4500);
+
+        try {
+          await fetch('/api/upload-logo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dataUrl }),
+          });
+        } catch (err) {
+          console.warn('API de upload local não respondeu, mas localStorage atualizado:', err);
+        }
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 text-slate-100 font-['Poppins'] flex flex-col justify-between selection:bg-[#20C933] selection:text-white">
-      {/* 🧭 BARRA SUPERIOR */}
-      <header className="w-full border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-8 py-3.5">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <VagouOfficialLogo size="lg" />
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-white text-lg tracking-tight">VagouApp</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-[4px] bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold">
-                  Gateway Oficial
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
-                O ecossistema inteligente de vagas imediatas & gestão
-              </p>
-            </div>
-          </div>
-
-          <a
-            href="https://seunegocio.vagouapp.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-3.5 py-1.5 rounded-[4px] bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+    <div className="min-h-screen w-full bg-slate-950 text-slate-100 font-['Poppins'] flex flex-col justify-center items-center p-4 sm:p-6 selection:bg-[#20C933] selection:text-white">
+      {/* 🚀 CONTEÚDO PRINCIPAL (SEM CABEÇALHO, TUDO DIRETO E RESPONSIVO) */}
+      <main className="w-full max-w-md mx-auto flex flex-col items-center">
+        {/* 🖼️ MOLDURA DEDICADA PARA EXIBIÇÃO DA IMAGEM DO LOGO OFICIAL DO SUPABASE */}
+        <div className="mb-6 w-full flex flex-col items-center">
+          <div
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                handleFileUpload(e.dataTransfer.files[0]);
+              }
+            }}
+            className="group relative flex flex-col items-center"
           >
-            <Store className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="hidden sm:inline">Já é parceiro?</span>
-            <span>Entrar no Salão</span>
-          </a>
-        </div>
-      </header>
-
-      {/* 🚀 CONTEÚDO PRINCIPAL */}
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-10 sm:py-16 flex flex-col justify-center">
-        <div className="text-center space-y-3 mb-10 sm:mb-14 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[4px] bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Bem-vindo ao VagouApp</span>
+            <OfficialLogoDisplay
+              frameClassName="bg-transparent border-0 shadow-none"
+              onOpenConfig={() => setIsLogoConfigOpen(true)}
+            >
+              {/* Input escondido para drag & drop ou seleção direta */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/*"
+                className="hidden"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    handleFileUpload(e.target.files[0]);
+                  }
+                }}
+              />
+            </OfficialLogoDisplay>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
-            Para onde você deseja ir hoje?
-          </h1>
-
-          <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-            Escolha seu objetivo abaixo para ser direcionado ao ambiente ideal.
-          </p>
+          {uploadSuccess && (
+            <div className="mt-2 text-[11px] text-[#20C933] font-medium flex items-center gap-1 animate-fadeIn">
+              <CheckCircle className="w-3.5 h-3.5 text-[#20C933]" />
+              <span>Imagem oficial do logo aplicada com sucesso!</span>
+            </div>
+          )}
         </div>
 
-        {/* CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-stretch">
-          {/* CARD 1: CLIENTES */}
-          <div className="bg-slate-900 border border-slate-800 hover:border-emerald-500/40 rounded-[4px] p-6 sm:p-8 flex flex-col justify-between transition-all duration-200 group relative overflow-hidden shadow-2xl">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="w-14 h-14 rounded-[4px] bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shadow-lg shadow-emerald-500/10 group-hover:scale-105 transition">
-                  <CalendarCheck2 className="w-7 h-7 text-emerald-400" />
-                </div>
-                <span className="px-3 py-1 rounded-[4px] text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                  Consumidor / Cliente
-                </span>
-              </div>
+        {/* 🔀 DUAS ABAS DIRETAS: "PRA VOCÊ" & "SEU NEGÓCIO" */}
+        <div className="w-full grid grid-cols-2 gap-1.5 p-1 bg-slate-900 border border-slate-800 rounded-[4px] mb-3 shadow-lg">
+          <button
+            type="button"
+            onClick={() => setActiveTab('client')}
+            className={`py-2.5 px-3 rounded-[4px] text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
+              activeTab === 'client'
+                ? 'bg-[#20C933] text-white shadow-md'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <User className="w-4 h-4" />
+            <span>Pra Você</span>
+          </button>
 
-              <div className="space-y-2">
-                <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                  Quero Agendar um Horário
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                  Encontre salões, barbearias e clínicas perto de você com vagas imediatas ou agende para os próximos dias.
-                </p>
-              </div>
+          <button
+            type="button"
+            onClick={() => setActiveTab('business')}
+            className={`py-2.5 px-3 rounded-[4px] text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
+              activeTab === 'business'
+                ? 'bg-[#20C933] text-white shadow-md'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Store className="w-4 h-4" />
+            <span>Seu Negócio</span>
+          </button>
+        </div>
 
-              <div className="space-y-2.5 pt-2 border-t border-slate-800/80">
-                <div className="flex items-center gap-2.5 text-xs text-slate-300 font-medium">
-                  <Clock className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Radar de vagas imediatas para hoje</span>
-                </div>
-                <div className="flex items-center gap-2.5 text-xs text-slate-300 font-medium">
-                  <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Busca inteligente por proximidade no mapa</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-8">
+        {/* 📦 CONTEÚDO DA ABA (100% DA LARGURA NO MOBILE, RESPONSIVO, SEM POLUIÇÃO) */}
+        <div className="w-full">
+          {activeTab === 'client' ? (
+            /* ABA 1: PRA VOCÊ (CLIENTE) */
+            <div className="w-full bg-slate-900 border border-slate-800 rounded-[4px] p-5 sm:p-6 space-y-4 shadow-2xl animate-fadeIn">
               <a
                 href="https://portal.vagouapp.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-3.5 px-5 rounded-[4px] bg-[#20C933] hover:bg-[#1bb32d] text-white font-bold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20 active:scale-98"
+                className="w-full py-3 px-4 rounded-[4px] bg-[#20C933] hover:bg-[#1bb32d] text-white font-bold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-emerald-500/20 active:scale-98"
               >
                 <span className="text-white font-bold">Portal de Vagas</span>
                 <ArrowRight className="w-4 h-4 text-white" />
               </a>
-            </div>
-          </div>
 
-          {/* CARD 2: ESTABELECIMENTOS (ABRE O FORMULÁRIO MESTRE OFICIAL DA TRÍADE) */}
-          <div className="bg-slate-900 border border-slate-800 hover:border-emerald-500/40 rounded-[4px] p-6 sm:p-8 flex flex-col justify-between transition-all duration-200 group relative overflow-hidden shadow-2xl">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="w-14 h-14 rounded-[4px] bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shadow-lg shadow-emerald-500/10 group-hover:scale-105 transition">
-                  <Building2 className="w-7 h-7 text-emerald-400" />
-                </div>
-                <span className="px-3 py-1 rounded-[4px] text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                  Salão / Profissional
+              {/* 🔍 LOCALIZAR DETERMINADO SALÃO ESPECÍFICO */}
+              <div className="space-y-1.5 pt-3 border-t border-slate-800">
+                <span className="text-[11px] text-slate-400 font-medium block">
+                  Procurando um salão específico? Busque pelo nome:
                 </span>
-              </div>
-
-              <div className="space-y-2">
-                <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                  Cadastrar Meu Estabelecimento
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                  Preencha horários ociosos, receba novos clientes pelo Radar e modernize a gestão do seu salão ou barbearia.
-                </p>
-              </div>
-
-              <div className="space-y-2.5 pt-2 border-t border-slate-800/80">
-                <div className="flex items-center gap-2.5 text-xs text-slate-300 font-medium">
-                  <TrendingUp className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Publique vagas ociosas e aumente seu faturamento</span>
-                </div>
-                <div className="flex items-center gap-2.5 text-xs text-slate-300 font-medium">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Ficha cadastral 100% digital com suporte oficial</span>
-                </div>
+                <QuickSalonLauncher
+                  targetApp="portal"
+                  placeholder="Digite o nome do salão (ex: dom-cavalcanti)..."
+                  actionLabel="Ver vagas"
+                />
               </div>
             </div>
+          ) : (
+            /* ABA 2: SEU NEGÓCIO (DONO DE ESTABELECIMENTO) */
+            <div className="w-full bg-slate-900 border border-slate-800 rounded-[4px] p-5 sm:p-6 space-y-4 shadow-2xl animate-fadeIn">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-[4px] bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
+                  <Building2 className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div>
+                  <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                    Área do Estabelecimento
+                  </h2>
+                  <p className="text-xs text-slate-400">
+                    Cadastre seu salão ou acesse o painel de gestão.
+                  </p>
+                </div>
+              </div>
 
-            <div className="pt-8 space-y-2">
-              {/* BOTAO QUE ABRE O FORMULARIO MESTRE OFICIAL DA TRIADE */}
+              {/* BOTÃO PRINCIPAL: CADASTRO DO SALÃO */}
               <button
                 type="button"
                 onClick={() => setIsRegisterModalOpen(true)}
-                className="w-full py-3.5 px-5 rounded-[4px] bg-white hover:bg-slate-200 text-slate-950 font-bold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-98"
+                className="w-full py-3 px-4 rounded-[4px] bg-white hover:bg-slate-200 text-slate-950 font-bold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98"
               >
                 <span>Criar Meu Negócio</span>
                 <ArrowRight className="w-4 h-4 text-slate-950" />
               </button>
 
-              <div className="text-center">
-                <a
-                  href="https://seunegocio.vagouapp.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-slate-400 hover:text-emerald-400 transition inline-flex items-center gap-1"
+              {/* ATALHO PARA MEUS NEGÓCIOS */}
+              <div className="text-center pt-2 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setIsHubModalOpen(true)}
+                  className="text-xs text-emerald-400 hover:underline transition inline-flex items-center gap-1 cursor-pointer font-medium"
                 >
-                  <span>Já possui cadastro? Entrar no Meu Negócio</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
+                  <Layers className="w-3.5 h-3.5" />
+                  <span>Acessar conta ou meus estabelecimentos</span>
+                </button>
               </div>
             </div>
-          </div>
+          )}
+        </div>
+
+        {/* RODAPÉ DISCRETO */}
+        <div className="mt-8 text-center text-[11px] text-slate-500">
+          <span>vagouapp.com · Todos os direitos reservados</span>
         </div>
       </main>
 
-      {/* 🏢 OVERLAY QUE RENDERIZA EXCLUSIVAMENTE O TRIADE_ESTABLISHMENT_MASTER_FORM */}
-      {isRegisterModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fadeIn">
-          <TriadeEstablishmentMasterForm
-            onClose={() => setIsRegisterModalOpen(false)}
-            onSuccess={() => {
-              window.location.href = 'https://seunegocio.vagouapp.com';
-            }}
-          />
-        </div>
+      {/* 🏛️ MODAL DE CADASTRO OFICIAL VIA EMBED DA CENTRAL SOBERANA (adm.vagouapp.com) */}
+      <VagouRegisterModal
+        isOpen={isRegisterModalOpen}
+        onClose={() => setIsRegisterModalOpen(false)}
+        onSuccess={(payload) => {
+          console.log('[VagouApp] Estabelecimento cadastrado com sucesso via Central Soberana:', payload);
+          setIsRegisterModalOpen(false);
+        }}
+      />
+
+      {/* 📦 OVERLAY DO HUB DE NEGÓCIOS & ACERVO DO USUÁRIO */}
+      {isHubModalOpen && (
+        <UserBusinessHubModal
+          onClose={() => setIsHubModalOpen(false)}
+          onOpenNewSalonRegistration={() => {
+            setIsHubModalOpen(false);
+            setIsRegisterModalOpen(true);
+          }}
+        />
       )}
+
+      {/* 🗄️ MODAL DE CONFIGURAÇÃO DIRETA DO LOGO NO SUPABASE STORAGE */}
+      <SupabaseLogoConfigModal
+        isOpen={isLogoConfigOpen}
+        onClose={() => setIsLogoConfigOpen(false)}
+        onSaveUrl={(url) => {
+          localStorage.setItem('vagou_supabase_logo_url', url);
+          window.dispatchEvent(new Event('vagou_logo_updated'));
+          setUploadSuccess(true);
+          setTimeout(() => setUploadSuccess(false), 4500);
+        }}
+        onUploadFile={(file) => {
+          handleFileUpload(file);
+        }}
+      />
     </div>
   );
 };
