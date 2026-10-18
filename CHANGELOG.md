@@ -4,6 +4,19 @@ Todas as alterações notáveis deste projeto serão documentadas neste arquivo 
 
 ---
 
+## [1.1.5] - 2026-10-18
+### Correção Definitiva de Integração do Embed Oficial (admvapp) & Logotipo Supabase
+- **Ponto Único da Verdade (Single Source of Truth):**
+  - O modal de cadastro (`VagouRegisterModal.tsx`) e a busca da API (`supabase.ts`) agora apontam diretamente e sem intermediários para `https://adm.vagouapp.com/embed` e `https://adm.vagouapp.com/api/public/*`.
+  - Eliminadas quaisquer URLs de preview obsoletas ou portas que causavam `TypeError: Failed to fetch` e tela de erro 404.
+  - Adicionado suporte a `postMessage` padronizado (JSON e objetos literais), tecla `Escape` e botão de fechamento explícito no topo do modal.
+- **Roteador `/embed` Global (`App.tsx`):**
+  - Rota direta `/embed` agora delega e serve o formulário soberano de `https://adm.vagouapp.com/embed` em tela cheia.
+- **Resolução & Fallback do Logotipo Oficial (`OfficialLogoDisplay.tsx` & `VagouOfficialLogo.tsx`):**
+  - Incluído o asset empacotado `logo.png` na cadeia de resolução de candidatos do Supabase Storage para garantir exibição nítida, com fundo transparente e texto branco mesmo se o bucket não estiver populado.
+- **Gerador de Código Embed no Admin Master (`AdminMasterSuite.tsx`):**
+  - Adicionado o modal "Código de Incorporação Embed" com seleção de formulários (`estabelecimento`, `usuario`, `usuario_login`, `mnv_cadastro`, `mnv_login`), cópia com um clique do snippet `<iframe ...>` e banner oficial do Single Source of Truth.
+
 ## [1.1.4] - 2026-10-18
 ### Transparência do Logotipo & Limpeza Visual Estrita
 - **Remoção de Span/Botão Auxiliar:** Removido o botão e span de texto abaixo do logo no Gateway Hub (`VagouGatewayHub.tsx`), mantendo a área do topo exclusivamente dedicada à imagem do logotipo.

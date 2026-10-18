@@ -130,7 +130,7 @@ VALUES (
   'branding',
   'media',
   'vagou_logo_transparente_texto_branco.png',
-  'https://sa-east-1.supabase.co/storage/v1/object/public/media/vagou_logo_transparente_texto_branco.png',
+  'https://xemenxdhuoekytyhmgyt.supabase.co/storage/v1/object/public/media/vagou_logo_transparente_texto_branco.png',
   'image/png',
   jsonb_build_object(
     'description', 'Logotipo oficial da Tríade VagouApp com checkmark verde e texto branco para superfícies escuras',

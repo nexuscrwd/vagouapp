@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, Scissors, ArrowRight, Store, MapPin, X } from 'lucide-react';
 import { initialSalons } from '../data/mockDatabase';
 import { Salon } from '../types/admin';
+import { fetchClientSalons } from '../lib/supabase';
 
 interface QuickSalonLauncherProps {
   onSelectSalon?: (salon: Salon) => void;
@@ -20,14 +21,54 @@ export const QuickSalonLauncher: React.FC<QuickSalonLauncherProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const [salonsList, setSalonsList] = useState<Salon[]>(initialSalons);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Busca dados diretamente do Supabase (tabela salons) com fallback para initialSalons
+  useEffect(() => {
+    let isMounted = true;
+    fetchClientSalons()
+      .then((data) => {
+        if (isMounted && data && data.length > 0) {
+          // Mapeia colunas do Supabase para o tipo Salon se necessário
+          const mapped: Salon[] = data.map((s: any) => ({
+            id: s.id,
+            name: s.trade_name || s.name || 'Estabelecimento',
+            tradeName: s.trade_name || s.name || '',
+            cnpjCpf: s.cnpj_cpf || '',
+            slug: s.slug || '',
+            phone: s.phone || '',
+            city: s.city || 'São Paulo',
+            state: s.state || 'SP',
+            address: s.address || '',
+            category: s.category || 'salao',
+            status: s.status || 'active',
+            isVerified: s.is_verified || false,
+            rating: s.rating_avg || 5.0,
+            activeSlotsCount: 2,
+            totalAppointments: 10,
+            createdAt: s.created_at || new Date().toISOString(),
+            logo_url: s.logo_url,
+            branding: s.branding,
+          }));
+          setSalonsList(mapped);
+        }
+      })
+      .catch((err) => {
+        console.warn('Usando base local de mock para salões:', err);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Filtra por nome ou slug do estabelecimento
   const filteredSalons = searchTerm.trim()
-    ? initialSalons.filter(
+    ? salonsList.filter(
         (s) =>
           s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          s.slug.toLowerCase().includes(searchTerm.toLowerCase())
+          s.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (s.tradeName && s.tradeName.toLowerCase().includes(searchTerm.toLowerCase()))
       )
     : [];
 
@@ -141,16 +182,24 @@ export const QuickSalonLauncher: React.FC<QuickSalonLauncherProps> = ({
               </p>
             </div>
           ) : (
-            filteredSalons.map((salon) => (
+            filteredSalons.map((salon: any) => (
               <div
                 key={salon.id}
                 onClick={() => handleRedirect(salon)}
                 className="p-3 hover:bg-slate-800/80 transition cursor-pointer flex items-center justify-between gap-3 group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-[4px] bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
-                    <Scissors className="w-4 h-4 text-emerald-400" />
-                  </div>
+                  {salon.logo_url || salon.branding?.logo_url ? (
+                    <img
+                      src={salon.logo_url || salon.branding?.logo_url}
+                      alt={salon.tradeName || salon.name}
+                      className="w-10 h-10 rounded-full object-cover border border-emerald-500/30"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                      <Scissors className="w-4 h-4 text-emerald-400" />
+                    </div>
+                  )}
                   <div className="text-left">
                     <div className="flex items-center gap-2">
                       <span className="text-xs sm:text-sm font-bold text-white group-hover:text-emerald-400 transition">
@@ -183,3 +232,5 @@ export const QuickSalonLauncher: React.FC<QuickSalonLauncherProps> = ({
     </div>
   );
 };
+
+export default QuickSalonLauncher;

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import officialLogoImg from '../assets/logo.png';
-import officialLogoIconImg from '../assets/logo-icon.png';
+import {
+  getSupabaseLogoCandidates,
+  fetchActiveSupabaseLogoUrl,
+} from '../lib/supabase';
 
 export interface VagouOfficialLogoProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'hero';
@@ -11,11 +14,10 @@ export interface VagouOfficialLogoProps {
   framed?: boolean;
 }
 
-const DEFAULT_SUPABASE_LOGO_URL =
-  import.meta.env.VITE_SUPABASE_LOGO_URL ||
-  (import.meta.env.VITE_SUPABASE_URL
-    ? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/media/vagou_logo_transparente_texto_branco.png`
-    : '');
+const SUPABASE_LOGO_CANDIDATES = [
+  ...getSupabaseLogoCandidates(),
+  officialLogoImg,
+];
 
 export const VagouOfficialLogo: React.FC<VagouOfficialLogoProps> = ({
   variant = 'icon',
@@ -24,31 +26,38 @@ export const VagouOfficialLogo: React.FC<VagouOfficialLogoProps> = ({
   title = 'VagouApp Oficial',
   framed = false,
 }) => {
-  const [logoSrc, setLogoSrc] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      const saved =
-        localStorage.getItem('vagou_supabase_logo_url') ||
-        localStorage.getItem('vagou_official_logo_custom');
-      if (saved) return saved;
-    }
-    return DEFAULT_SUPABASE_LOGO_URL;
-  });
+  const [candidates, setCandidates] = useState<string[]>(SUPABASE_LOGO_CANDIDATES);
+  const [candidateIndex, setCandidateIndex] = useState<number>(0);
+  const [logoSrc, setLogoSrc] = useState<string>(
+    SUPABASE_LOGO_CANDIDATES[0] || officialLogoImg
+  );
 
   useEffect(() => {
-    const handleLogoUpdate = () => {
-      const updated =
-        localStorage.getItem('vagou_supabase_logo_url') ||
-        localStorage.getItem('vagou_official_logo_custom');
-      if (updated) {
-        setLogoSrc(updated);
-      } else {
-        setLogoSrc(DEFAULT_SUPABASE_LOGO_URL);
+    let active = true;
+    fetchActiveSupabaseLogoUrl().then((discoveredUrl) => {
+      if (active && discoveredUrl) {
+        setCandidates((prev) => [
+          discoveredUrl,
+          ...prev.filter((item) => item !== discoveredUrl),
+        ]);
+        setCandidateIndex(0);
+        setLogoSrc(discoveredUrl);
       }
+    });
+    return () => {
+      active = false;
     };
-
-    window.addEventListener('vagou_logo_updated', handleLogoUpdate);
-    return () => window.removeEventListener('vagou_logo_updated', handleLogoUpdate);
   }, []);
+
+  const handleImageError = () => {
+    const nextIndex = candidateIndex + 1;
+    if (nextIndex < candidates.length) {
+      setCandidateIndex(nextIndex);
+      setLogoSrc(candidates[nextIndex]);
+    } else {
+      setLogoSrc(officialLogoImg);
+    }
+  };
 
   // Variante HERO: Exibição no Gateway Hub Central
   if (variant === 'hero') {
@@ -56,7 +65,7 @@ export const VagouOfficialLogo: React.FC<VagouOfficialLogoProps> = ({
       <img
         src={logoSrc}
         alt="VagouApp Oficial"
-        onError={() => setLogoSrc(officialLogoImg)}
+        onError={handleImageError}
         className="h-14 sm:h-16 w-auto max-w-[280px] sm:max-w-[340px] object-contain select-none pointer-events-none"
         loading="eager"
         decoding="async"
@@ -96,7 +105,7 @@ export const VagouOfficialLogo: React.FC<VagouOfficialLogoProps> = ({
       <img
         src={logoSrc}
         alt="VagouApp Oficial"
-        onError={() => setLogoSrc(officialLogoImg)}
+        onError={handleImageError}
         className="h-8 sm:h-9 w-auto max-w-[220px] object-contain select-none pointer-events-none"
         loading="eager"
         decoding="async"
@@ -130,7 +139,7 @@ export const VagouOfficialLogo: React.FC<VagouOfficialLogoProps> = ({
     );
   }
 
-  // Variante ICON: Ícone / Símbolo V
+  // Variante ICON: Ícone / Símbolo V Oficial
   return (
     <div
       onClick={onClick}
@@ -140,7 +149,7 @@ export const VagouOfficialLogo: React.FC<VagouOfficialLogoProps> = ({
       } ${className}`}
     >
       <img
-        src={officialLogoIconImg}
+        src="/icon.svg"
         alt="VagouApp Símbolo Oficial"
         className="w-full h-full object-contain pointer-events-none"
         loading="eager"

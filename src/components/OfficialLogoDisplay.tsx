@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import officialLogoIconImg from '../assets/logo-icon.png';
+import officialLogoImg from '../assets/logo.png';
+import {
+  getSupabaseLogoCandidates,
+  fetchActiveSupabaseLogoUrl,
+} from '../lib/supabase';
 
 export interface OfficialLogoDisplayProps {
   /** Fonte da imagem (opcional, prioriza Supabase Storage se não especificado) */
@@ -10,24 +14,19 @@ export interface OfficialLogoDisplayProps {
   frameClassName?: string;
   /** Texto alternativo para acessibilidade */
   altText?: string;
-  /** Callback para abrir o modal de configuração da URL do Supabase */
+  /** Callback opcional ao clicar no logo */
   onOpenConfig?: () => void;
   /** Elementos filhos opcionais dentro da moldura */
   children?: React.ReactNode;
 }
 
-// URL padrão do logo original no Supabase Storage
-const DEFAULT_SUPABASE_LOGO_URL =
-  import.meta.env.VITE_SUPABASE_LOGO_URL ||
-  (import.meta.env.VITE_SUPABASE_URL
-    ? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/media/vagou_logo_transparente_texto_branco.png`
-    : '');
+const SUPABASE_LOGO_CANDIDATES = [
+  ...getSupabaseLogoCandidates(),
+  officialLogoImg,
+];
 
 /**
- * Componente dedicado à exibição do logo oficial VagouApp.
- * 
- * Exibe a imagem EXATA hospedada no bucket do Supabase Storage ou inserida pelo usuário,
- * sem qualquer alteração, vetorização ou recriação por IA.
+ * Componente dedicado à exibição do logo oficial VagouApp puxando diretamente do Supabase Storage.
  */
 export const OfficialLogoDisplay: React.FC<OfficialLogoDisplayProps> = ({
   src,
@@ -37,84 +36,72 @@ export const OfficialLogoDisplay: React.FC<OfficialLogoDisplayProps> = ({
   onOpenConfig,
   children,
 }) => {
-  const getInitialSrc = () => {
-    if (src) return src;
-    if (typeof window !== 'undefined') {
-      const custom =
-        localStorage.getItem('vagou_supabase_logo_url') ||
-        localStorage.getItem('vagou_official_logo_custom');
-      if (custom) return custom;
-    }
-    return DEFAULT_SUPABASE_LOGO_URL;
-  };
-
-  const [currentSrc, setCurrentSrc] = useState<string>(getInitialSrc);
-  const [hasError, setHasError] = useState(false);
+  const [candidates, setCandidates] = useState<string[]>(SUPABASE_LOGO_CANDIDATES);
+  const [candidateIndex, setCandidateIndex] = useState<number>(0);
+  const [currentSrc, setCurrentSrc] = useState<string>(
+    src || SUPABASE_LOGO_CANDIDATES[0] || officialLogoImg
+  );
 
   useEffect(() => {
-    const handleUpdate = () => {
-      const updated =
-        localStorage.getItem('vagou_supabase_logo_url') ||
-        localStorage.getItem('vagou_official_logo_custom');
-      if (updated) {
-        setCurrentSrc(updated);
-        setHasError(false);
-      }
-    };
+    // Limpa eventuais caches locais antigos que sobrescreviam o logo do Supabase
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('vagou_official_logo_custom');
+    }
 
-    window.addEventListener('vagou_logo_updated', handleUpdate);
-    return () => window.removeEventListener('vagou_logo_updated', handleUpdate);
-  }, []);
+    let active = true;
+    fetchActiveSupabaseLogoUrl().then((discoveredUrl) => {
+      if (active && discoveredUrl && !src) {
+        setCandidates((prev) => [
+          discoveredUrl,
+          ...prev.filter((item) => item !== discoveredUrl),
+        ]);
+        setCandidateIndex(0);
+        setCurrentSrc(discoveredUrl);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [src]);
 
   useEffect(() => {
     if (src) {
       setCurrentSrc(src);
-      setHasError(false);
     }
   }, [src]);
 
   const handleImageError = () => {
-    console.warn('[VagouApp] URL do Supabase Storage não respondeu. Aguardando URL pública oficial.');
-    setHasError(true);
+    const nextIndex = candidateIndex + 1;
+    if (!src && nextIndex < candidates.length) {
+      setCandidateIndex(nextIndex);
+      setCurrentSrc(candidates[nextIndex]);
+      return;
+    }
+    setCurrentSrc(officialLogoImg);
   };
 
   return (
     <div
-      className={`official-logo-frame relative inline-flex items-center justify-center p-2 bg-transparent border-0 shadow-none select-none ${frameClassName}`}
+      onClick={onOpenConfig}
+      className={`official-logo-frame relative inline-flex items-center justify-center p-2 bg-transparent border-0 shadow-none select-none ${
+        onOpenConfig ? 'cursor-pointer' : ''
+      } ${frameClassName}`}
     >
-      {currentSrc && !hasError ? (
-        <img
-          src={currentSrc}
-          alt={altText}
-          onError={handleImageError}
-          className={`official-logo-raw block select-none pointer-events-none max-h-16 w-auto ${className}`}
-          style={{
-            filter: 'none',
-            WebkitFilter: 'none',
-            transform: 'none',
-            imageRendering: 'auto',
-          }}
-          loading="eager"
-          decoding="async"
-        />
-      ) : (
-        /* Estado limpo oficial exibindo somente a logo sobre fundo transparente */
-        <div
-          onClick={onOpenConfig}
-          className="flex items-center gap-2.5 cursor-pointer select-none"
-          title="VagouApp Oficial"
-        >
-          <img
-            src={officialLogoIconImg}
-            alt="VagouApp Checkmark Oficial"
-            className="w-10 h-10 sm:w-11 sm:h-11 object-contain shrink-0"
-          />
-          <span className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-            Vagou<span className="text-[#20C933] font-extrabold">app</span>
-          </span>
-        </div>
-      )}
-
+      <img
+        src={currentSrc}
+        alt={altText}
+        onError={handleImageError}
+        className={`official-logo-raw block select-none pointer-events-none h-14 sm:h-16 w-auto max-w-[260px] sm:max-w-[300px] object-contain ${className}`}
+        style={{
+          filter: 'none',
+          WebkitFilter: 'none',
+          transform: 'none',
+          imageRendering: 'auto',
+        }}
+        loading="eager"
+        decoding="async"
+      />
       {children}
     </div>
   );

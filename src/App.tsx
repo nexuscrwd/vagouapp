@@ -1,22 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { VagouGatewayHub } from './components/VagouGatewayHub';
 import { AdminMasterSuite } from './components/AdminMasterSuite';
-import { SovereignEmbedForm } from './components/SovereignEmbedForm';
 
 export const App: React.FC = () => {
-  // Define a view ativa com base na rota, hostname ou parâmetros de consulta
-  const [currentView, setCurrentView] = useState<'gateway' | 'admin' | 'embed'>(() => {
+  const [currentView, setCurrentView] = useState<'gateway' | 'admin'>(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
-      // Rota oficial de embed da Central Soberana (adm.vagouapp.com/embed?form=estabelecimento)
-      if (
-        window.location.pathname.startsWith('/embed') ||
-        urlParams.get('form') === 'estabelecimento' ||
-        urlParams.get('embed') === 'true'
-      ) {
-        return 'embed';
-      }
-
       if (urlParams.get('view') === 'admin' || window.location.hostname.startsWith('adm.')) {
         return 'admin';
       }
@@ -25,18 +14,30 @@ export const App: React.FC = () => {
   });
 
   useEffect(() => {
-    // Atualiza o título dinamicamente conforme a visualização
-    if (currentView === 'embed') {
-      document.title = 'Cadastro Oficial de Estabelecimento — Central VagouApp (adm.vagouapp.com)';
-    } else if (currentView === 'admin') {
+    if (currentView === 'admin') {
       document.title = 'Painel de Admin Master — VagouApp (adm.vagouapp.com)';
     } else {
       document.title = 'VagouApp — O Ecossistema de Vagas Imediatas e Gestão de Salões';
     }
   }, [currentView]);
 
-  if (currentView === 'embed') {
-    return <SovereignEmbedForm />;
+  const isEmbed =
+    typeof window !== 'undefined' &&
+    (window.location.pathname.startsWith('/embed') ||
+      new URLSearchParams(window.location.search).get('embed') === 'true');
+
+  if (isEmbed) {
+    const search = window.location.search || '?form=estabelecimento';
+    return (
+      <div className="w-screen h-screen bg-slate-950 overflow-hidden">
+        <iframe
+          src={`https://adm.vagouapp.com/embed${search}`}
+          className="w-full h-full border-0 bg-transparent"
+          title="Formulário Oficial VagouApp — Central Admin Master"
+          allow="clipboard-write; geolocation"
+        />
+      </div>
+    );
   }
 
   if (currentView === 'admin') {

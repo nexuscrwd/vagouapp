@@ -28,6 +28,7 @@ import {
   BadgeAlert,
   SlidersHorizontal,
   Home,
+  Code,
 } from 'lucide-react';
 import { VagouOfficialLogo } from './VagouOfficialLogo';
 import {
@@ -84,6 +85,12 @@ export const AdminMasterSuite: React.FC<AdminMasterSuiteProps> = ({ onBackToGate
     impactMnvapp: '',
     sqlMigration: '',
   });
+
+  // Embed Code Modal State
+  const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
+  const [embedFormType, setEmbedFormType] = useState<
+    'estabelecimento' | 'usuario' | 'usuario_login' | 'mnv_cadastro' | 'mnv_login'
+  >('estabelecimento');
 
   // Notification Toast State
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -255,6 +262,16 @@ export const AdminMasterSuite: React.FC<AdminMasterSuiteProps> = ({ onBackToGate
               <span className="text-slate-600">·</span>
               <span className="text-white font-bold">admvapp</span>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setIsEmbedModalOpen(true)}
+              className="px-3 py-1.5 rounded-[4px] bg-emerald-500/15 border border-emerald-500/30 text-xs text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/25 transition flex items-center gap-1.5 cursor-pointer font-bold shadow-sm"
+              title="Obter código de incorporação iframe para a Tríade"
+            >
+              <Code className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Código Embed</span>
+            </button>
 
             {onBackToGateway && (
               <button
@@ -833,6 +850,17 @@ export const AdminMasterSuite: React.FC<AdminMasterSuiteProps> = ({ onBackToGate
                                   <Ban className="w-3.5 h-3.5" />
                                 </button>
                               )}
+
+                              <button
+                                onClick={() => {
+                                  setEmbedFormType('estabelecimento');
+                                  setIsEmbedModalOpen(true);
+                                }}
+                                className="p-1.5 rounded-[4px] bg-slate-800 hover:bg-emerald-950/40 text-slate-300 hover:text-emerald-400 border border-slate-700 hover:border-emerald-500/30 transition cursor-pointer"
+                                title="Gerar / Ver Código Embed deste Salão"
+                              >
+                                <Code className="w-3.5 h-3.5" />
+                              </button>
 
                               <button
                                 onClick={() => handleOpenEditSalon(salon)}
@@ -1504,6 +1532,152 @@ zone_name = "vagouapp.com"`}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL: CÓDIGO DE INCORPORAÇÃO EMBED (SINGLE SOURCE OF TRUTH) */}
+      {/* ========================================================================= */}
+      {isEmbedModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fadeIn">
+          <div className="bg-slate-900 border border-slate-800 rounded-[4px] max-w-2xl w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Code className="w-5 h-5 text-emerald-400" />
+                <h3 className="font-bold text-white text-base">Código de Incorporação Embed</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsEmbedModalOpen(false)}
+                className="text-slate-400 hover:text-white p-1 rounded-[4px] hover:bg-slate-800 transition cursor-pointer"
+                title="Fechar"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              <div>
+                <label className="text-slate-400 font-medium block mb-1.5">Selecione o Formulário Oficial:</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEmbedFormType('estabelecimento')}
+                    className={`p-2.5 rounded-[4px] border text-left transition cursor-pointer ${
+                      embedFormType === 'estabelecimento'
+                        ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-bold'
+                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    Estabelecimento - Cadastro de Salão
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEmbedFormType('usuario')}
+                    className={`p-2.5 rounded-[4px] border text-left transition cursor-pointer ${
+                      embedFormType === 'usuario'
+                        ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-bold'
+                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    Usuário - Cadastro de Cliente
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEmbedFormType('usuario_login')}
+                    className={`p-2.5 rounded-[4px] border text-left transition cursor-pointer ${
+                      embedFormType === 'usuario_login'
+                        ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-bold'
+                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    Usuário - Login de Cliente
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEmbedFormType('mnv_cadastro')}
+                    className={`p-2.5 rounded-[4px] border text-left transition cursor-pointer ${
+                      embedFormType === 'mnv_cadastro'
+                        ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-bold'
+                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    Parceiro - Cadastro Meu Negócio
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEmbedFormType('mnv_login')}
+                    className={`p-2.5 rounded-[4px] border text-left transition cursor-pointer ${
+                      embedFormType === 'mnv_login'
+                        ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-bold'
+                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    Parceiro - Login Meu Negócio
+                  </button>
+                </div>
+              </div>
+
+              {/* CALLOUT: SINGLE SOURCE OF TRUTH */}
+              <div className="p-3.5 rounded-[4px] bg-slate-950 border border-slate-800 flex items-start gap-2.5">
+                <AlertCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <strong className="text-white font-bold block">Single Source of Truth</strong>
+                  <p className="text-slate-300 leading-relaxed text-[11px]">
+                    Ao utilizar este iframe, qualquer alteração cadastral, novos campos ou regras de validação aplicadas aqui no Admin são refletidas imediatamente em <strong>vagouapp.com</strong>, <strong>portal.vagouapp.com</strong> e <strong>seunegocio.vagouapp.com</strong>.
+                  </p>
+                </div>
+              </div>
+
+              {/* CÓDIGO SNIPPET */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400 font-medium">Copie e cole este iframe no portal.vagouapp.com, seunegocio.vagouapp.com ou vagouapp.com:</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const code = `<iframe src="https://adm.vagouapp.com/embed?form=${embedFormType}" width="100%" height="750" frameborder="0" allow="clipboard-write; geolocation"></iframe>`;
+                      navigator.clipboard.writeText(code);
+                      showToast('Código iframe copiado para a área de transferência!');
+                    }}
+                    className="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 cursor-pointer"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>Copiar Código</span>
+                  </button>
+                </div>
+                <pre className="p-3 bg-slate-950 border border-slate-800 rounded-[4px] text-slate-300 font-mono text-[11px] overflow-x-auto selection:bg-[#20C933] selection:text-white">
+{`<iframe
+  src="https://adm.vagouapp.com/embed?form=${embedFormType}"
+  width="100%"
+  height="750"
+  frameborder="0"
+  allow="clipboard-write; geolocation"
+></iframe>`}
+                </pre>
+              </div>
+
+              <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+                <a
+                  href={`https://adm.vagouapp.com/embed?form=${embedFormType}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 transition"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Testar URL direta em nova aba</span>
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => setIsEmbedModalOpen(false)}
+                  className="px-5 py-2 rounded-[4px] bg-[#20C933] hover:bg-[#1bb32d] text-white font-bold transition cursor-pointer shadow-md shadow-emerald-500/20"
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

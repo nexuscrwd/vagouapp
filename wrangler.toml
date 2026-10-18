@@ -12,7 +12,3 @@ zone_name = "vagouapp.com"
 [[routes]]
 pattern = "www.vagouapp.com/*"
 zone_name = "vagouapp.com"
-
-[[routes]]
-pattern = "adm.vagouapp.com/*"
-zone_name = "vagouapp.com"

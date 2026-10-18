@@ -1,51 +1,25 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   Building2,
   ArrowRight,
   Store,
   Layers,
   User,
-  Upload,
-  CheckCircle,
 } from 'lucide-react';
 import { OfficialLogoDisplay } from './OfficialLogoDisplay';
-import { VagouOfficialLogo } from './VagouOfficialLogo';
-import { VagouRegisterModal } from './VagouRegisterModal';
 import { QuickSalonLauncher } from './QuickSalonLauncher';
 import { UserBusinessHubModal } from './UserBusinessHubModal';
-import { SupabaseLogoConfigModal } from './SupabaseLogoConfigModal';
+import { VagouRegisterModal, TriadeFormType } from './VagouRegisterModal';
 
 export const VagouGatewayHub: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'client' | 'business'>('client');
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isHubModalOpen, setIsHubModalOpen] = useState(false);
-  const [isLogoConfigOpen, setIsLogoConfigOpen] = useState(false);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [registerFormType, setRegisterFormType] = useState<TriadeFormType>('estabelecimento');
 
-  const handleFileUpload = (file: File) => {
-    if (!file || !file.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const dataUrl = e.target?.result as string;
-      if (dataUrl) {
-        localStorage.setItem('vagou_official_logo_custom', dataUrl);
-        window.dispatchEvent(new Event('vagou_logo_updated'));
-        setUploadSuccess(true);
-        setTimeout(() => setUploadSuccess(false), 4500);
-
-        try {
-          await fetch('/api/upload-logo', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ dataUrl }),
-          });
-        } catch (err) {
-          console.warn('API de upload local não respondeu, mas localStorage atualizado:', err);
-        }
-      }
-    };
-    reader.readAsDataURL(file);
+  const handleOpenAdminForm = (formType: TriadeFormType = 'estabelecimento') => {
+    setRegisterFormType(formType);
+    setIsRegisterModalOpen(true);
   };
 
   return (
@@ -54,41 +28,9 @@ export const VagouGatewayHub: React.FC = () => {
       <main className="w-full max-w-md mx-auto flex flex-col items-center">
         {/* 🖼️ MOLDURA DEDICADA PARA EXIBIÇÃO DA IMAGEM DO LOGO OFICIAL DO SUPABASE */}
         <div className="mb-6 w-full flex flex-col items-center">
-          <div
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                handleFileUpload(e.dataTransfer.files[0]);
-              }
-            }}
-            className="group relative flex flex-col items-center"
-          >
-            <OfficialLogoDisplay
-              frameClassName="bg-transparent border-0 shadow-none"
-              onOpenConfig={() => setIsLogoConfigOpen(true)}
-            >
-              {/* Input escondido para drag & drop ou seleção direta */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/png,image/*"
-                className="hidden"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    handleFileUpload(e.target.files[0]);
-                  }
-                }}
-              />
-            </OfficialLogoDisplay>
+          <div className="group relative flex flex-col items-center">
+            <OfficialLogoDisplay frameClassName="bg-transparent border-0 shadow-none" />
           </div>
-
-          {uploadSuccess && (
-            <div className="mt-2 text-[11px] text-[#20C933] font-medium flex items-center gap-1 animate-fadeIn">
-              <CheckCircle className="w-3.5 h-3.5 text-[#20C933]" />
-              <span>Imagem oficial do logo aplicada com sucesso!</span>
-            </div>
-          )}
         </div>
 
         {/* 🔀 DUAS ABAS DIRETAS: "PRA VOCÊ" & "SEU NEGÓCIO" */}
@@ -164,10 +106,10 @@ export const VagouGatewayHub: React.FC = () => {
                 </div>
               </div>
 
-              {/* BOTÃO PRINCIPAL: CADASTRO DO SALÃO */}
+              {/* BOTÃO PRINCIPAL: ABRE O FORMULÁRIO OFICIAL DO ADMIN MASTER (admvapp) */}
               <button
                 type="button"
-                onClick={() => setIsRegisterModalOpen(true)}
+                onClick={() => handleOpenAdminForm('estabelecimento')}
                 className="w-full py-3 px-4 rounded-[4px] bg-white hover:bg-slate-200 text-slate-950 font-bold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98"
               >
                 <span>Criar Meu Negócio</span>
@@ -195,14 +137,11 @@ export const VagouGatewayHub: React.FC = () => {
         </div>
       </main>
 
-      {/* 🏛️ MODAL DE CADASTRO OFICIAL VIA EMBED DA CENTRAL SOBERANA (adm.vagouapp.com) */}
+      {/* 📋 MODAL DO FORMULÁRIO SOBERANO DIRETO DO ADMIN MASTER (admvapp) */}
       <VagouRegisterModal
         isOpen={isRegisterModalOpen}
         onClose={() => setIsRegisterModalOpen(false)}
-        onSuccess={(payload) => {
-          console.log('[VagouApp] Estabelecimento cadastrado com sucesso via Central Soberana:', payload);
-          setIsRegisterModalOpen(false);
-        }}
+        formType={registerFormType}
       />
 
       {/* 📦 OVERLAY DO HUB DE NEGÓCIOS & ACERVO DO USUÁRIO */}
@@ -211,25 +150,10 @@ export const VagouGatewayHub: React.FC = () => {
           onClose={() => setIsHubModalOpen(false)}
           onOpenNewSalonRegistration={() => {
             setIsHubModalOpen(false);
-            setIsRegisterModalOpen(true);
+            handleOpenAdminForm('estabelecimento');
           }}
         />
       )}
-
-      {/* 🗄️ MODAL DE CONFIGURAÇÃO DIRETA DO LOGO NO SUPABASE STORAGE */}
-      <SupabaseLogoConfigModal
-        isOpen={isLogoConfigOpen}
-        onClose={() => setIsLogoConfigOpen(false)}
-        onSaveUrl={(url) => {
-          localStorage.setItem('vagou_supabase_logo_url', url);
-          window.dispatchEvent(new Event('vagou_logo_updated'));
-          setUploadSuccess(true);
-          setTimeout(() => setUploadSuccess(false), 4500);
-        }}
-        onUploadFile={(file) => {
-          handleFileUpload(file);
-        }}
-      />
     </div>
   );
 };
