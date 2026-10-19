@@ -31,7 +31,7 @@ export const OfficialLogoDisplay: React.FC<OfficialLogoDisplayProps> = ({
 }) => {
   // Inicia com o logo local oficial por padrão para carregamento instantâneo de 0ms (zero piscadas)
   const [currentSrc, setCurrentSrc] = useState<string>(src || officialLogoImg);
-  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [isLoaded, setIsLoaded] = useState<boolean>(true);
 
   useEffect(() => {
     // Limpa eventuais caches locais antigos
@@ -47,7 +47,6 @@ export const OfficialLogoDisplay: React.FC<OfficialLogoDisplayProps> = ({
     let active = true;
 
     // Busca assíncrona no Supabase Storage: pré-carrega em memória antes de aplicar ao DOM
-    // Evita qualquer piscada ou troca de imagem quebrada na tela
     fetchActiveSupabaseLogoUrl().then((discoveredUrl) => {
       if (active && discoveredUrl && discoveredUrl !== officialLogoImg) {
         const preloader = new Image();
@@ -76,9 +75,7 @@ export const OfficialLogoDisplay: React.FC<OfficialLogoDisplayProps> = ({
         src={currentSrc}
         alt={altText}
         onLoad={() => setIsLoaded(true)}
-        className={`official-logo-raw block select-none pointer-events-none h-14 sm:h-16 w-auto max-w-[260px] sm:max-w-[300px] object-contain transition-opacity duration-700 ease-out ${
-          isLoaded ? 'opacity-100' : 'opacity-0'
-        } ${className}`}
+        className={`official-logo-raw block select-none pointer-events-none h-14 sm:h-16 w-auto max-w-[260px] sm:max-w-[300px] object-contain transition-opacity duration-300 ease-out opacity-100 ${className}`}
         style={{
           filter: 'none',
           WebkitFilter: 'none',

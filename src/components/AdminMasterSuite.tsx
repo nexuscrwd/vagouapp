@@ -1637,7 +1637,7 @@ zone_name = "vagouapp.com"`}
                   <button
                     type="button"
                     onClick={() => {
-                      const code = `<iframe src="https://adm.vagouapp.com/embed?form=${embedFormType}" width="100%" height="750" frameborder="0" allow="clipboard-write; geolocation"></iframe>`;
+                      const code = `<iframe src="https://adm.vagouapp.com/embed?form=${embedFormType}&direct=true" width="100%" height="750" frameborder="0" allow="clipboard-write; geolocation"></iframe>`;
                       navigator.clipboard.writeText(code);
                       showToast('Código iframe copiado para a área de transferência!');
                     }}

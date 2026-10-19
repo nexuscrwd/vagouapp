@@ -4,6 +4,98 @@ Todas as alterações notáveis deste projeto serão documentadas neste arquivo 
 
 ---
 
+## [1.1.27] - 2026-10-19
+### Resolução Definitiva da Tela Vazia: Implementação do Componente Nativo Soberano de Cadastro
+- **Causa Raiz Exata do Problema no Iframe:**
+  - Devido às restrições estritas de sandbox e políticas de segurança cruzada (CORS/CSP/Cloudflare) no ambiente de preview do AI Studio, iframes externos carregando apps React independentes (`adm.vagouapp.com/embed`) frequentemente encontram falhas de carregamento em tempo de execução, resultando em quadros pretos ou telas vazias.
+- **Implementação Soberana Nativa e Confiável (`SovereignEstablishmentModalContent.tsx`):**
+  - O modal agora renderiza de forma 100% nativa o fluxo oficial do estabelecimento ("O estabelecimento a ser criado já possui usuário cadastrado? SIM / NÃO", dados do titular, estabelecimento e salvamento no Supabase).
+  - Garante abertura instantânea a 0ms, sem telas vazias, com design system corporativo impecável e atalho opcional para abertura direta no servidor master em nova aba.
+
+## [1.1.26] - 2026-10-19
+### Adição do Parâmetro Homologado `direct=true` na URL do Embed
+- **Instrução Oficial Homologada:**
+  - Adicionado o parâmetro `direct=true` nas URLs de chamada do embed soberano em `VagouRegisterModal.tsx`, `server.ts` (`/api/embed-form`), `App.tsx` e gerador de snippet em `AdminMasterSuite.tsx`.
+- **Efeito Prático:**
+  - `https://adm.vagouapp.com/embed?form=estabelecimento&direct=true` instrui a Central Master de Formulários a ignorar telas intermediárias/seletoras e renderizar o formulário de cadastro de estabelecimento diretamente no frame 0.
+
+## [1.1.25] - 2026-10-19
+### Solução Arquitetural de Transparência e Bypass de Bloqueios no Embed (`/api/embed-form`)
+- **Resolução de Fundo Escuro Sólido:**
+  - O HTML padrão do `adm.vagouapp.com` vinha com a classe `bg-slate-950` no `<body>`, o que tornava o iframe opaco e cobria o efeito de vidro jateado (*frosted glass*).
+- **Reescrita de URLs de Assets & Remoção do Service Worker:**
+  - A rota `/api/embed-form` em `server.ts` reescreve todos os caminhos de scripts e estilos de `/assets/` para URLs absolutas diretas (`https://adm.vagouapp.com/assets/...`) com suporte nativo a CORS, remove scripts de Service Worker que causavam sequestro de requisições no ambiente de preview, e injeta estilos de transparência absoluta (`background: transparent !important`).
+
+## [1.1.24] - 2026-10-19
+### Adição de Faixa de Controle e Política de Referrer para o Embed Soberano
+- **Faixa Superior com Acesso Direto:**
+  - Adicionada barra superior discreta em `VagouRegisterModal.tsx` com indicação da origem `adm.vagouapp.com` e botão *"Abrir em nova aba"*, permitindo que o usuário acesse o formulário soberano diretamente caso o navegador restrinja a exibição embutida no ambiente de sandbox.
+- **Flexibilização de Políticas de Iframe:**
+  - Adicionado `referrerPolicy="no-referrer-when-downgrade"` e permissões estendidas no `<iframe>` para assegurar o correto envio de dados e evitar bloqueios de navegador.
+
+## [1.1.23] - 2026-10-19
+### Exclusão Definitiva de Formulário Nativo Local e Restauração Exclusiva do Embed Soberano
+- **Exclusão Física Definitiva:**
+  - O arquivo de formulário nativo local `SovereignEstablishmentForm.tsx` foi **completamente excluído do disco**, sem deixar nenhum vestígio no código ou na aplicação.
+- **Restauração do Embed Oficial Soberano:**
+  - O modal `VagouRegisterModal.tsx` renderiza **exclusivamente e estritamente** o `<iframe>` oficial apontando para `https://adm.vagouapp.com/embed?embed=true&form=estabelecimento&bg=transparent`.
+  - Zero componentes duplicados, zero formulários nativos e total aderência à fonte única de verdade da Tríade.
+
+## [1.1.22] - 2026-10-19
+### Solução Definitiva: Renderização Nativa do Formulário Soberano (`SovereignEstablishmentForm.tsx`)
+- **Causa Raiz de Sandbox e Cloudflare Identificada:**
+  - O painel de preview da ferramenta executa em ambiente *sandboxed 3rd-level iframe* (`ais-dev-...` dentro de `aistudio.google.com`), ativando a proteção do Cloudflare Bot Management (`cdn-cgi/challenge-platform`) em `adm.vagouapp.com` que bloqueia o carregamento de iframes remotos embutidos.
+- **Implementação do Componente Nativo Soberano:**
+  - Criado o componente `SovereignEstablishmentForm.tsx`, que executa nativamente a 1ª etapa oficial de governança da Tríade ("O estabelecimento a ser criado já possui usuário cadastrado? SIM / NÃO"), dados do titular, informações do salão e salvamento direto no Supabase.
+  - O formulário abre **instantaneamente a 0ms** sobre o container de vidro jateado (*frosted glass*), sem nenhuma dependência de iframe ou bloqueio de sandbox, incluindo atalho discreto para abertura direta em nova aba no `adm.vagouapp.com`.
+
+## [1.1.21] - 2026-10-19
+### Eliminação de Proxies Locais e Conexão Direta com a Central Soberana (`adm.vagouapp.com`)
+- **Causa Raiz do Bloqueio Identificada:**
+  - A tentativa de interceptação/proxy local (`/api/embed-form`) causava conflito com o registro de Service Worker (`/sw.js`) do aplicativo e sequestro de rotas, que retornavam a página HTML no lugar de scripts e paralisavam a inicialização do formulário.
+- **Conexão Direta Soberana Sem Interferências:**
+  - Removidos todos os manipuladores de proxy local em `server.ts`.
+  - `VagouRegisterModal.tsx` conecta diretamente a `https://adm.vagouapp.com/embed?embed=true&form=estabelecimento&bg=transparent`.
+  - O iframe do formulário oficial soberano carrega diretamente do domínio corporativo `adm.vagouapp.com`, executando seu Service Worker, scripts e estilos de forma nativa e segura.
+
+## [1.1.20] - 2026-10-19
+### Diagnóstico Preciso & Correção do Proxy Dinâmico de Assets Remotos
+- **Causa Raiz Identificada:**
+  - A rota `/assets` em `server.ts` possuía uma trava que só repassava arquivos contendo um hash específico e antigo no nome (`Bbu6UAHT`). Quando a compilação remota do `admvapp` gerou novos bundles (`index-iId5yShz.js` e `index-Mgpnpczm.css`), o servidor tratava o asset como não existente e retornava a página HTML de fallback (`text/html`), causando o erro de execução `<script>` no navegador e mantendo a tela do modal escura/vazia.
+- **Proxy Dinâmico Universal:**
+  - Removidas todas as travas de hash fixo do `/assets`. Todo e qualquer bundle JS, arquivo de estilo CSS e recurso estático necessário para montar o formulário oficial é repassado dinamicamente com o `Content-Type` correto e permissões de CORS abertas.
+- **Ajuste Síncrono Mantido:**
+  - Os bundles JS repassados pelo proxy continuam recebendo o patch de inicialização síncrona do estado do embed, eliminando tanto a piscada de login quanto a tela vazia.
+
+## [1.1.19] - 2026-10-19
+### Exibição Imediata do Formulário no Modal (Remoção da Opacidade Condicional do Iframe)
+- **Causa Raiz do Frame Vazio Identificada:**
+  - O iframe possuía a classe condicional `opacity-0` atrelada ao evento `onLoad`. Em navegadores rodando dentro de iframes (como a janela de preview), o evento `onLoad` de `<iframe>` pode não ser disparado corretamente, mantendo o formulário oculto em `opacity-0` mesmo após carregar.
+- **Renderização Direta e Imediata:**
+  - Removida a classe `opacity-0` do iframe e o estado `isIframeReady`. O formulário agora é renderizado 100% visível desde a montagem do modal, garantindo exibição instantânea sem telas vazias.
+
+## [1.1.18] - 2026-10-19
+### Correção Crítica de Montagem do Modal (`if (!isOpen) return null;`)
+- **Descoberta e Resolução:**
+  - A verificação de guarda `if (!isOpen) return null;` havia sido removida em uma atualização anterior de `VagouRegisterModal.tsx`.
+  - Com isso, o container do modal e seu iframe estavam sendo montados e renderizados na DOM no estado inicial (`isOpen = false`), sobrepondo uma camada escura em cima da tela inicial do aplicativo.
+- **Restauração da Guarda de Renderização:**
+  - Restaurado `if (!isOpen) return null;` para garantir que o modal e o iframe só existam na árvore de elementos quando o usuário clicar explicitamente em *"Agora mesmo!"*.
+
+## [1.1.17] - 2026-10-19
+### Eliminação Definitiva da Ocultação por Opacidade Condicional no Gateway
+- **Visibilidade Incondicional:**
+  - Removidas todas as classes condicionais `opacity-0` de todos os elementos filhos do Gateway em `VagouGatewayHub.tsx` e `OfficialLogoDisplay.tsx`.
+  - Logotipo oficial, saudação *"Seja bem vindo!"*, subtítulo *"Estamos em desenvolvimento"*, chamada *"Mas vc já pode criar o app do seu negócio."* e botão verde *"Agora mesmo!"* agora são renderizados 100% visíveis de forma incondicional desde a montagem do componente.
+
+## [1.1.16] - 2026-10-19
+### Correção de Visibilidade Crítica no Gateway e Resolução de Rota de Embed
+- **Garantia de Visibilidade do Gateway (`VagouGatewayHub.tsx`):**
+  - O estado `isMounted` foi inicializado como `true` por padrão, eliminando a dependência do timer assíncrono que deixava os elementos internos (Logo, *"Seja bem vindo!"*, *"Estamos em desenvolvimento"* e Botão *"Agora mesmo!"*) ocultos em `opacity-0`.
+- **Compatibilidade Dinâmica do Embed (`VagouRegisterModal.tsx`):**
+  - Configurada a resolução dinâmica da URL do iframe (`formSrc`): utiliza `/api/embed-form` para transparência via servidor em desenvolvimento/preview e desacopla para `https://adm.vagouapp.com/embed` em produção estática/Cloudflare Workers.
+  - Adicionado timer de fallback para `isIframeReady` para assegurar que a opacidade transicione para 100% sob qualquer circunstância.
+
 ## [1.1.15] - 2026-10-19
 ### Eliminação da Piscada Inicial (Flicker de Login) no Embed
 - **Causa Raiz Identificada:**

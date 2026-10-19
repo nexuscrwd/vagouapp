@@ -16,17 +16,12 @@ export interface VagouRegisterModalProps {
   onSuccess?: (payload: any) => void;
 }
 
-// URL da Central Soberana de Formulários Oficial do admvapp (adm.vagouapp.com)
-const ADMIN_FORMS_BASE_URL =
-  import.meta.env.VITE_ADMIN_FORMS_URL || 'https://adm.vagouapp.com';
-
 export const VagouRegisterModal: React.FC<VagouRegisterModalProps> = ({
   isOpen,
   onClose,
   formType = 'estabelecimento',
   salonId,
   salonName,
-  onSuccess,
 }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -47,18 +42,8 @@ export const VagouRegisterModal: React.FC<VagouRegisterModalProps> = ({
         }
       }
 
-      if (data?.source === 'VAGOUAPP_EMBED' || data?.source === 'VAGOUAPP_FORM') {
-        if (data.event === 'CLOSE' || data.action === 'CLOSE') {
-          onClose();
-        }
-        if (
-          data.event === 'SALON_MASTER_SUCCESS' ||
-          data.event === 'USER_REGISTER_SUCCESS' ||
-          data.event === 'REGISTER_SUCCESS' ||
-          data.event === 'LOGIN_SUCCESS' ||
-          data.type === 'SALON_REGISTERED'
-        ) {
-          onSuccess?.(data.payload || data);
+      if (data?.source === 'VAGOUAPP_EMBED' || data?.source === 'VAGOUAPP_FORM' || data?.type === 'VAGOU_MODAL_CLOSE' || data?.type === 'CLOSE_MODAL') {
+        if (data.event === 'CLOSE' || data.action === 'CLOSE' || data?.type === 'VAGOU_MODAL_CLOSE' || data?.type === 'CLOSE_MODAL') {
           onClose();
         }
       }
@@ -70,54 +55,31 @@ export const VagouRegisterModal: React.FC<VagouRegisterModalProps> = ({
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('message', handleMessage);
     };
-  }, [onClose, onSuccess]);
+  }, [onClose]);
 
-  const [isIframeReady, setIsIframeReady] = React.useState(false);
+  if (!isOpen) return null;
 
-  useEffect(() => {
-    if (isOpen) {
-      setIsIframeReady(false);
-    }
-  }, [isOpen]);
-
-  const params = new URLSearchParams({
-    embed: 'true',
-    form: formType,
-    bg: 'transparent',
-  });
-  if (salonId) params.set('salonId', salonId);
-  if (salonName) params.set('salonName', salonName);
-  const formSrc = `/api/embed-form?${params.toString()}`;
+  const srcUrl = `https://adm.vagouapp.com/embed?form=${formType}${salonId ? `&salonId=${salonId}` : ''}${salonName ? `&salonName=${encodeURIComponent(salonName)}` : ''}`;
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-slate-950/60 backdrop-blur-md animate-fadeIn"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-slate-950/80 backdrop-blur-xl animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
         }
       }}
     >
-      {/* 🪟 CONTAINER ÚNICO EM VIDRO JATEADO (SEM BOX DUPLO, SEM DOIS 'X', E COM TRANSPARÊNCIA TOTAL) */}
-      <div className="relative w-full max-w-lg h-[540px] sm:h-[620px] max-h-[90vh] bg-slate-950/45 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-[0_16px_56px_rgba(0,0,0,0.75)] overflow-hidden flex flex-col transition-all duration-300">
-        {/* Placeholder suave enquanto o iframe inicializa (evita qualquer micro-flicker) */}
-        {!isIframeReady && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center space-y-3 pointer-events-none z-10 transition-opacity duration-300">
-            <div className="w-8 h-8 rounded-full border-2 border-emerald-500/30 border-t-[#20C933] animate-spin" />
-            <span className="text-xs font-medium text-slate-300">Carregando ambiente seguro...</span>
-          </div>
-        )}
-
-        <iframe
-          src={formSrc}
-          title="Formulário Oficial VagouApp — Central Admin Master"
-          onLoad={() => setIsIframeReady(true)}
-          className={`w-full h-full border-0 bg-transparent rounded-2xl sm:rounded-3xl transition-opacity duration-300 ${
-            isIframeReady ? 'opacity-100' : 'opacity-0'
-          }`}
-          allow="clipboard-write; geolocation"
-        />
-      </div>
+      {/* 🪟 APENAS O IFRAME INTERNO DO FORMULÁRIO (SEM CAIXAS EXTERNAS, SEM BOTÕES DUPLICADOS) */}
+      <iframe
+        src={srcUrl}
+        width="100%"
+        height="100%"
+        frameBorder="0"
+        allow="clipboard-write; geolocation"
+        className="w-full max-w-lg h-[560px] sm:h-[640px] lg:h-[700px] max-h-[92vh] border-0 bg-transparent rounded-3xl"
+        title="Formulário Oficial VagouApp"
+      />
     </div>
   );
 };
