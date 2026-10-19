@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import officialLogoImg from '../assets/logo.png';
-import {
-  getSupabaseLogoCandidates,
-  fetchActiveSupabaseLogoUrl,
-} from '../lib/supabase';
+import { fetchActiveSupabaseLogoUrl } from '../lib/supabase';
 
 export interface OfficialLogoDisplayProps {
   /** Fonte da imagem (opcional, prioriza Supabase Storage se não especificado) */
@@ -20,13 +17,9 @@ export interface OfficialLogoDisplayProps {
   children?: React.ReactNode;
 }
 
-const SUPABASE_LOGO_CANDIDATES = [
-  ...getSupabaseLogoCandidates(),
-  officialLogoImg,
-];
-
 /**
- * Componente dedicado à exibição do logo oficial VagouApp puxando diretamente do Supabase Storage.
+ * Componente dedicado à exibição do logo oficial VagouApp.
+ * Carrega instantaneamente sem piscadas (sem flicker de 404s) e transiciona suavemente.
  */
 export const OfficialLogoDisplay: React.FC<OfficialLogoDisplayProps> = ({
   src,
@@ -36,27 +29,34 @@ export const OfficialLogoDisplay: React.FC<OfficialLogoDisplayProps> = ({
   onOpenConfig,
   children,
 }) => {
-  const [candidates, setCandidates] = useState<string[]>(SUPABASE_LOGO_CANDIDATES);
-  const [candidateIndex, setCandidateIndex] = useState<number>(0);
-  const [currentSrc, setCurrentSrc] = useState<string>(
-    src || SUPABASE_LOGO_CANDIDATES[0] || officialLogoImg
-  );
+  // Inicia com o logo local oficial por padrão para carregamento instantâneo de 0ms (zero piscadas)
+  const [currentSrc, setCurrentSrc] = useState<string>(src || officialLogoImg);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
   useEffect(() => {
-    // Limpa eventuais caches locais antigos que sobrescreviam o logo do Supabase
+    // Limpa eventuais caches locais antigos
     if (typeof window !== 'undefined') {
       localStorage.removeItem('vagou_official_logo_custom');
     }
 
+    if (src) {
+      setCurrentSrc(src);
+      return;
+    }
+
     let active = true;
+
+    // Busca assíncrona no Supabase Storage: pré-carrega em memória antes de aplicar ao DOM
+    // Evita qualquer piscada ou troca de imagem quebrada na tela
     fetchActiveSupabaseLogoUrl().then((discoveredUrl) => {
-      if (active && discoveredUrl && !src) {
-        setCandidates((prev) => [
-          discoveredUrl,
-          ...prev.filter((item) => item !== discoveredUrl),
-        ]);
-        setCandidateIndex(0);
-        setCurrentSrc(discoveredUrl);
+      if (active && discoveredUrl && discoveredUrl !== officialLogoImg) {
+        const preloader = new Image();
+        preloader.src = discoveredUrl;
+        preloader.onload = () => {
+          if (active) {
+            setCurrentSrc(discoveredUrl);
+          }
+        };
       }
     });
 
@@ -64,22 +64,6 @@ export const OfficialLogoDisplay: React.FC<OfficialLogoDisplayProps> = ({
       active = false;
     };
   }, [src]);
-
-  useEffect(() => {
-    if (src) {
-      setCurrentSrc(src);
-    }
-  }, [src]);
-
-  const handleImageError = () => {
-    const nextIndex = candidateIndex + 1;
-    if (!src && nextIndex < candidates.length) {
-      setCandidateIndex(nextIndex);
-      setCurrentSrc(candidates[nextIndex]);
-      return;
-    }
-    setCurrentSrc(officialLogoImg);
-  };
 
   return (
     <div
@@ -91,8 +75,10 @@ export const OfficialLogoDisplay: React.FC<OfficialLogoDisplayProps> = ({
       <img
         src={currentSrc}
         alt={altText}
-        onError={handleImageError}
-        className={`official-logo-raw block select-none pointer-events-none h-14 sm:h-16 w-auto max-w-[260px] sm:max-w-[300px] object-contain ${className}`}
+        onLoad={() => setIsLoaded(true)}
+        className={`official-logo-raw block select-none pointer-events-none h-14 sm:h-16 w-auto max-w-[260px] sm:max-w-[300px] object-contain transition-opacity duration-700 ease-out ${
+          isLoaded ? 'opacity-100' : 'opacity-0'
+        } ${className}`}
         style={{
           filter: 'none',
           WebkitFilter: 'none',
@@ -108,3 +94,4 @@ export const OfficialLogoDisplay: React.FC<OfficialLogoDisplayProps> = ({
 };
 
 export default OfficialLogoDisplay;
+

@@ -4,6 +4,42 @@ Todas as alterações notáveis deste projeto serão documentadas neste arquivo 
 
 ---
 
+## [1.1.8] - 2026-10-19
+### Simplificação Elegante do Gateway: Logo Puro, Nova Copy e Botão Sólido
+- **Logo Puro (Sem Efeitos de Blur/Glow):**
+  - Removidos todos os halos luminosos e efeitos de blur atrás e sob o logo, mantendo a transição de esmaecimento suave sem piscadas.
+- **Estrutura de Conteúdo Atualizada:**
+  - Removido o box/badge de *"E desculpe-nos."*
+  - Adicionada saudação: *"Seja bem vindo!"*
+  - Subtítulo: *"Estamos em desenvolvimento"*
+  - Chamada com destaque cromático pontual: *"Mas vc já pode criar o app do seu negócio"* (com `"vc"` e `"seu negócio"` em verde `#20C933`).
+- **Botão Sólido Verde ("Agora mesmo!"):**
+  - Preenchimento sólido simples em `#20C933` (sem efeitos de blur ou reflexos).
+  - Removido o ícone SVG de sparkles.
+  - Regra de Contraste Absoluta rigorosamente mantida: texto e ícone de seta em branco puro (`text-white`).
+
+## [1.1.7] - 2026-10-19
+### Atualização de Copy & Visual Impacto ("Tcham") no Gateway Hub
+- **Nova Identidade Textual de Entrada:**
+  - Badge de cortesia elegante: *"E desculpe-nos."*
+  - Título de impacto: *"Estamos em desenvolvimento"*
+  - Chamada de ação direta: *"Mas você já pode criar o app do seu negócio"*
+- **Botão de Ação Radiante ("Agora mesmo!"):**
+  - Botão redesenhado com gradiente institucional `#087A2A` -> `#20C933` -> `#38E54B`, ícone `Sparkles` animado, efeito reflexo luminoso (*light sweep*) e foco em conversão imediata.
+  - Obediência rigorosa à Regra de Contraste Absoluta: tipografia e ícones estritamente em branco puro (`text-white`).
+- **Glow Ambiental & Refinamento de Vidro Jateado:**
+  - Adicionado halo luminoso verde de fundo e realce suave sob o logotipo sem interferir na visualização dos slides de salão.
+
+## [1.1.6] - 2026-10-19
+### Eliminação de Flicker do Logotipo & Transição Suave Esmaecida (Fade-In)
+- **Eliminação Definitiva da Piscada do Logotipo (`OfficialLogoDisplay.tsx`):**
+  - Substituição da tentativa inicial em rede por carregamento prioritário instantâneo (0ms) do asset oficial local empacotado.
+  - Pré-carregamento assíncrono em segundo plano via `new Image()` antes de qualquer atualização no DOM, eliminando múltiplos eventos `onError` e flashes de 404.
+  - Adicionada transição suave de opacidade (`transition-opacity duration-700 ease-out`).
+- **Esmaecimento Gradual dos Elementos do Gateway Hub (`VagouGatewayHub.tsx`):**
+  - Implementado lifecycle de montagem (`isMounted`) com animação progressiva e escalonada (*staggered fade-in*).
+  - O contêiner de vidro jateado, logotipo, textos de boas-vindas/desculpas e o botão **"Criar Meu App"** agora surgem deslizando suavemente de forma elegante e cinematográfica.
+
 ## [1.1.5] - 2026-10-18
 ### Correção Definitiva de Integração do Embed Oficial (admvapp) & Logotipo Supabase
 - **Ponto Único da Verdade (Single Source of Truth):**
