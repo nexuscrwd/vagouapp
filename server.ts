@@ -112,6 +112,70 @@ async function startServer() {
     }
   });
 
+  // Proxy de assets do embed oficial admvapp para execução same-origin sem bloqueios de CORS
+  app.use('/assets', async (req, res, next) => {
+    if (req.url.includes('Bbu6UAHT') || req.url.includes('CbZ1LmtA')) {
+      try {
+        const remoteUrl = `https://adm.vagouapp.com/assets${req.url}`;
+        const remoteRes = await fetch(remoteUrl);
+        if (remoteRes.ok) {
+          const contentType = remoteRes.headers.get('content-type') || (req.url.endsWith('.js') ? 'application/javascript; charset=utf-8' : 'text/css');
+          res.setHeader('Content-Type', contentType);
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          
+          if (req.url.endsWith('.js')) {
+            let code = await remoteRes.text();
+            // Elimina a piscada inicial: inicializa 'n' sincronicamente como true se for rota de embed,
+            // impedindo que o React renderize a tela de admin/login no primeiro frame antes do useEffect
+            code = code.replace(
+              'const[l,a]=y.useState(!1),[n,o]=y.useState(!1)',
+              'const[l,a]=y.useState(!1),[n,o]=y.useState(()=>typeof window<"u"&&(window.location.search.includes("embed")||window.location.search.includes("form=")||window.location.pathname.includes("/embed")))'
+            );
+            return res.send(code);
+          }
+
+          const buffer = await remoteRes.arrayBuffer();
+          return res.send(Buffer.from(buffer));
+        }
+      } catch (err) {
+        console.warn('Erro ao repassar asset remoto do embed:', err);
+      }
+    }
+    next();
+  });
+
+  // 🪟 Rota de Proxy com Injeção de Transparência do Embed Oficial do admvapp
+  app.get('/api/embed-form', async (req, res) => {
+    try {
+      const searchParams = new URLSearchParams(req.query as any);
+      searchParams.set('embed', 'true');
+      searchParams.set('bg', 'transparent');
+
+      const targetUrl = `https://adm.vagouapp.com/embed?${searchParams.toString()}`;
+      const response = await fetch(targetUrl);
+      let html = await response.text();
+
+      // Injeta CSS de transparência absoluta para o efeito de vidro jateado (frosted glass)
+      const injection = `
+        <style>
+          html, body, #root {
+            background: transparent !important;
+            background-color: transparent !important;
+          }
+        </style>
+      `;
+
+      html = html.replace('<head>', `<head>${injection}`);
+      html = html.replace(/class="[^"]*bg-slate-950[^"]*"/, 'class="bg-transparent text-slate-100 antialiased"');
+
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-store');
+      return res.send(html);
+    } catch (err: any) {
+      return res.status(500).send(`Erro ao carregar formulário soberano: ${err.message}`);
+    }
+  });
+
   // Create Vite server in middleware mode
   const vite = await createViteServer({
     server: { middlewareMode: true },

@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { X } from 'lucide-react';
 
 export type TriadeFormType =
   | 'estabelecimento'
@@ -17,7 +16,7 @@ export interface VagouRegisterModalProps {
   onSuccess?: (payload: any) => void;
 }
 
-// URL da Central Soberana de Formulários (admvapp - adm.vagouapp.com)
+// URL da Central Soberana de Formulários Oficial do admvapp (adm.vagouapp.com)
 const ADMIN_FORMS_BASE_URL =
   import.meta.env.VITE_ADMIN_FORMS_URL || 'https://adm.vagouapp.com';
 
@@ -30,6 +29,12 @@ export const VagouRegisterModal: React.FC<VagouRegisterModalProps> = ({
   onSuccess,
 }) => {
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
     const handleMessage = (event: MessageEvent) => {
       let data = event.data;
       if (!data) return;
@@ -38,7 +43,7 @@ export const VagouRegisterModal: React.FC<VagouRegisterModalProps> = ({
         try {
           data = JSON.parse(data);
         } catch {
-          // não é JSON string
+          // ignore
         }
       }
 
@@ -59,21 +64,21 @@ export const VagouRegisterModal: React.FC<VagouRegisterModalProps> = ({
       }
     };
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    window.addEventListener('message', handleMessage);
     window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('message', handleMessage);
     return () => {
-      window.removeEventListener('message', handleMessage);
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('message', handleMessage);
     };
   }, [onClose, onSuccess]);
 
-  if (!isOpen) return null;
+  const [isIframeReady, setIsIframeReady] = React.useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsIframeReady(false);
+    }
+  }, [isOpen]);
 
   const params = new URLSearchParams({
     embed: 'true',
@@ -82,57 +87,36 @@ export const VagouRegisterModal: React.FC<VagouRegisterModalProps> = ({
   });
   if (salonId) params.set('salonId', salonId);
   if (salonName) params.set('salonName', salonName);
-
-  const formSrc = `${ADMIN_FORMS_BASE_URL}/embed?${params.toString()}`;
+  const formSrc = `/api/embed-form?${params.toString()}`;
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 bg-slate-950/85 backdrop-blur-md animate-fadeIn"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-slate-950/60 backdrop-blur-md animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
         }
       }}
     >
-      <div className="relative w-full max-w-4xl h-[94vh] max-h-[880px] bg-slate-900 border border-slate-800 rounded-[4px] shadow-2xl overflow-hidden flex flex-col">
-        {/* Barra superior de controle do embed */}
-        <div className="flex items-center justify-between px-4 py-2.5 bg-slate-950 border-b border-slate-800 shrink-0">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-[4px] bg-[#20C933] inline-block animate-pulse"></span>
-            <span className="text-xs font-bold text-white tracking-wide">
-              {formType === 'estabelecimento'
-                ? 'Cadastro Oficial de Estabelecimento'
-                : formType === 'usuario'
-                ? 'Cadastro de Usuário (Cliente)'
-                : formType === 'usuario_login'
-                ? 'Acesso de Cliente (Login)'
-                : 'Central de Parceiros (Meu Negócio)'}
-            </span>
-            <span className="hidden sm:inline-block text-[10px] font-mono px-2 py-0.5 rounded-[4px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-              admvapp embed
-            </span>
+      {/* 🪟 CONTAINER ÚNICO EM VIDRO JATEADO (SEM BOX DUPLO, SEM DOIS 'X', E COM TRANSPARÊNCIA TOTAL) */}
+      <div className="relative w-full max-w-lg h-[540px] sm:h-[620px] max-h-[90vh] bg-slate-950/45 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-[0_16px_56px_rgba(0,0,0,0.75)] overflow-hidden flex flex-col transition-all duration-300">
+        {/* Placeholder suave enquanto o iframe inicializa (evita qualquer micro-flicker) */}
+        {!isIframeReady && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center space-y-3 pointer-events-none z-10 transition-opacity duration-300">
+            <div className="w-8 h-8 rounded-full border-2 border-emerald-500/30 border-t-[#20C933] animate-spin" />
+            <span className="text-xs font-medium text-slate-300">Carregando ambiente seguro...</span>
           </div>
+        )}
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1.5 rounded-[4px] text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer flex items-center gap-1 text-xs"
-            title="Fechar Formulário (Esc)"
-          >
-            <span className="hidden sm:inline text-[11px] font-medium">Fechar</span>
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Frame com formulário oficial do admvapp */}
-        <div className="w-full flex-1 relative bg-slate-950">
-          <iframe
-            src={formSrc}
-            title="Formulário Oficial VagouApp — Central Admin Master"
-            className="w-full h-full border-0 bg-transparent"
-            allow="clipboard-write; geolocation"
-          />
-        </div>
+        <iframe
+          src={formSrc}
+          title="Formulário Oficial VagouApp — Central Admin Master"
+          onLoad={() => setIsIframeReady(true)}
+          className={`w-full h-full border-0 bg-transparent rounded-2xl sm:rounded-3xl transition-opacity duration-300 ${
+            isIframeReady ? 'opacity-100' : 'opacity-0'
+          }`}
+          allow="clipboard-write; geolocation"
+        />
       </div>
     </div>
   );

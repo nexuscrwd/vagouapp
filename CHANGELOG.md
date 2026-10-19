@@ -4,6 +4,54 @@ Todas as alterações notáveis deste projeto serão documentadas neste arquivo 
 
 ---
 
+## [1.1.15] - 2026-10-19
+### Eliminação da Piscada Inicial (Flicker de Login) no Embed
+- **Causa Raiz Identificada:**
+  - O código do embed oficial possuía um `useState(false)` que só alternava para a rota de cadastro após o disparo assíncrono do `useEffect` inicial, renderizando temporariamente a tela de login/administração por 1 frame antes de trocar para o formulário.
+- **Inicialização Síncrona via Proxy:**
+  - O proxy de assets agora injeta a leitura síncrona dos parâmetros de URL na inicialização do estado do bundle, garantindo que o formulário de cadastro de estabelecimento monte diretamente desde o frame 0.
+- **Transição com Esmaecimento Suave (Fade-In):**
+  - Implementado listener `onLoad` com indicador de carregamento discreto e transição de opacidade (`transition-opacity duration-300`), garantindo uma transição fluida, elegante e sem piscadas.
+
+## [1.1.14] - 2026-10-19
+### Correção de Carregamento dos Assets do Embed Soberano via Proxy Local
+- **Resolução de Bloqueio de CORS:**
+  - Adicionado repasse em servidor para scripts e estilos remotos (`/assets/*`), eliminando bloqueios de CORS que impediam o formulário oficial de carregar dentro do iframe.
+- **Renderização Instantânea e Transparente:**
+  - O script oficial do `admvapp` agora executa em ambiente same-origin com sucesso, montando o formulário ("O estabelecimento a ser criado já possui usuário cadastrado? SIM / NÃO") diretamente sobre o vidro jateado (*frosted glass*).
+- **Ajuste de Altura do Container:**
+  - Dimensão do modal otimizada para `max-w-lg h-[540px] sm:h-[620px]` para acomodar fluidamente a transição de etapas com transparência total.
+
+## [1.1.13] - 2026-10-19
+### Eliminação do Box Duplo, Fim do "X" Duplicado e Transparência Total de Vidro Jateado
+- **Eliminação do "X" Duplicado:**
+  - Removido o botão de fechar externo sobreposto; o modal utiliza exclusivamente o botão "X" oficial já presente no formulário embutido do `admvapp`.
+- **Eliminação do Box Aninhado ("Box dentro de Box"):**
+  - Ajustadas as dimensões do container translúcido (`max-w-lg`) para se fundir exatamente com a escala do formulário oficial, acabando com as margens vazias e o aspecto de janela dupla.
+- **Transparência Absoluta do Fundo de Vidro Jateado:**
+  - Implementada rota de proxy interna `/api/embed-form` no servidor que injeta `background: transparent !important` no HTML do embed oficial, garantindo que o efeito de vidro jateado (`backdrop-blur-xl bg-slate-950/45`) e a transição dos slides ao fundo permaneçam 100% visíveis através do formulário.
+
+## [1.1.12] - 2026-10-19
+### Eliminação Definitiva do Formulário Nativo e Embed Oficial Soberano
+- **Remoção Total do Formulário Nativo Local:**
+  - Destruídos 100% dos campos, estados e handlers de formulário nativo duplicado no código.
+- **Integração Exclusiva com `admvapp`:**
+  - O modal renderiza estritamente o embed oficial do `admvapp` (`adm.vagouapp.com/embed`) através de iframe com transparência.
+- **Design de Vidro Jateado & Sem Cabeçalho Mantido:**
+  - Container em vidro jateado (`bg-slate-950/45 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-[0_16px_56px_rgba(0,0,0,0.75)]`).
+  - Sem nenhum cabeçalho, barra de controle ou faixa superior; apenas o botão flutuante de fechar (`X`) e a tela do formulário do `admvapp`.
+
+## [1.1.11] - 2026-10-19
+### Unificação do Layout de Vidro Jateado no Modal de Cadastro
+- **Layout de Vidro Jateado (Frosted Glass):**
+  - O modal agora possui exatamente a mesma estética do card principal (`bg-slate-950/45 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-[0_12px_48px_rgba(0,0,0,0.65)]`).
+- **Sem Cabeçalho Estrutural:**
+  - Removida a barra superior rígida com títulos e badges.
+  - Implementado botão flutuante minimalista de fechar (`X`) no canto superior direito.
+- **Elementos Internos Integrados:**
+  - Campos semitransparentes elegantes que deixam a imagem de fundo transparecer suavemente.
+  - Botão de envio em verde sólido `#20C933` com texto em branco puro (`text-white`).
+
 ## [1.1.10] - 2026-10-19
 ### Padronização do Título da Aba do Navegador
 - **Título Simplificado:**
