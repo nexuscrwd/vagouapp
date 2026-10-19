@@ -4,6 +4,12 @@ Todas as alterações notáveis deste projeto serão documentadas neste arquivo 
 
 ---
 
+## [1.1.10] - 2026-10-19
+### Padronização do Título da Aba do Navegador
+- **Título Simplificado:**
+  - Alterado o `<title>` no `index.html` e a propriedade `og:title` para estritamente `"VagouApp"`.
+  - Atualizado o hook de ciclo de vida em `App.tsx` para fixar o `document.title = 'VagouApp'`, eliminando qualquer sufixo longo em tempo de execução.
+
 ## [1.1.9] - 2026-10-19
 ### Correção de Hierarquia Visual: Destaque Nobre para "Seja bem vindo!"
 - **Hierarquia Tipográfica Ajustada:**

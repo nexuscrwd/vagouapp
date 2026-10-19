@@ -14,12 +14,8 @@ export const App: React.FC = () => {
   });
 
   useEffect(() => {
-    if (currentView === 'admin') {
-      document.title = 'Painel de Admin Master — VagouApp (adm.vagouapp.com)';
-    } else {
-      document.title = 'VagouApp — O Ecossistema de Vagas Imediatas e Gestão de Salões';
-    }
-  }, [currentView]);
+    document.title = 'VagouApp';
+  }, []);
 
   const isEmbed =
     typeof window !== 'undefined' &&
