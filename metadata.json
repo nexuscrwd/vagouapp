@@ -1,6 +1,6 @@
 {
   "name": "VagouApp — Gateway & Admin Master Hub",
-  "description": "Portal de entrada oficial e Painel de Governança Master do Ecossistema VagouApp (vagouapp.com e adm.vagouapp.com).",
+  "description": "Seu app de forma facil!",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
