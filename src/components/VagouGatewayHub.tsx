@@ -1,19 +1,10 @@
 import React, { useState } from 'react';
-import {
-  Building2,
-  ArrowRight,
-  Store,
-  Layers,
-  User,
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { OfficialLogoDisplay } from './OfficialLogoDisplay';
-import { QuickSalonLauncher } from './QuickSalonLauncher';
-import { UserBusinessHubModal } from './UserBusinessHubModal';
+import { BeautySalonBackgroundSlider } from './BeautySalonBackgroundSlider';
 import { VagouRegisterModal, TriadeFormType } from './VagouRegisterModal';
 
 export const VagouGatewayHub: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'client' | 'business'>('client');
-  const [isHubModalOpen, setIsHubModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [registerFormType, setRegisterFormType] = useState<TriadeFormType>('estabelecimento');
 
@@ -23,117 +14,55 @@ export const VagouGatewayHub: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 text-slate-100 font-['Poppins'] flex flex-col justify-center items-center p-4 sm:p-6 selection:bg-[#20C933] selection:text-white">
-      {/* 🚀 CONTEÚDO PRINCIPAL (SEM CABEÇALHO, TUDO DIRETO E RESPONSIVO) */}
-      <main className="w-full max-w-md mx-auto flex flex-col items-center">
-        {/* 🖼️ MOLDURA DEDICADA PARA EXIBIÇÃO DA IMAGEM DO LOGO OFICIAL DO SUPABASE */}
-        <div className="mb-6 w-full flex flex-col items-center">
+    <div className="relative min-h-screen w-full bg-slate-950 text-slate-100 font-['Poppins'] flex flex-col justify-center items-center p-4 sm:p-6 selection:bg-[#20C933] selection:text-white overflow-x-hidden">
+      {/* 🎞️ SLIDE DE FUNDO DE SERVIÇOS DE BELEZA E SALÃO COM TRANSIÇÃO SUAVE */}
+      <BeautySalonBackgroundSlider />
+
+      {/* 🚀 CONTEÚDO PRINCIPAL CENTRALIZADO COM EFEITO VIDRO JATEADO (FROSTED GLASS) */}
+      <main className="relative z-10 w-full max-w-md mx-auto flex flex-col items-center p-6 sm:p-8 rounded-2xl sm:rounded-3xl bg-slate-950/30 backdrop-blur-md border border-white/15 shadow-2xl shadow-black/40 transition-all duration-300">
+        {/* 🖼️ DIV DO LOGO OFICIAL CONECTADO DIRETAMENTE AO SUPABASE */}
+        <div className="mb-5 w-full flex flex-col items-center">
           <div className="group relative flex flex-col items-center">
             <OfficialLogoDisplay frameClassName="bg-transparent border-0 shadow-none" />
           </div>
         </div>
 
-        {/* 🔀 DUAS ABAS DIRETAS: "PRA VOCÊ" & "SEU NEGÓCIO" */}
-        <div className="w-full grid grid-cols-2 gap-1.5 p-1 bg-slate-900 border border-slate-800 rounded-[4px] mb-3 shadow-lg">
-          <button
-            type="button"
-            onClick={() => setActiveTab('client')}
-            className={`py-2.5 px-3 rounded-[4px] text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
-              activeTab === 'client'
-                ? 'bg-[#20C933] text-white shadow-md'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <User className="w-4 h-4" />
-            <span>Pra Você</span>
-          </button>
+        {/* 💬 CONTEÚDO DIRETO NA TELA */}
+        <div className="w-full flex flex-col items-center text-center space-y-6 max-w-sm">
+          {/* TÍTULO E PEDIDO DE DESCULPAS */}
+          <div className="space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight drop-shadow-[0_2px_14px_rgba(0,0,0,0.95)]">
+              Bem vindo!
+            </h1>
+            <p className="text-sm sm:text-base text-slate-100 font-medium leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
+              Pedimos desculpas por estarmos em construção
+            </p>
+          </div>
 
-          <button
-            type="button"
-            onClick={() => setActiveTab('business')}
-            className={`py-2.5 px-3 rounded-[4px] text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
-              activeTab === 'business'
-                ? 'bg-[#20C933] text-white shadow-md'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <Store className="w-4 h-4" />
-            <span>Seu Negócio</span>
-          </button>
+          {/* CHAMADA PARA CRIAÇÃO DO APP */}
+          <div className="space-y-4 w-full flex flex-col items-center">
+            <p className="text-sm sm:text-base text-emerald-300 font-bold tracking-wide drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
+              Mas você pode criar seu app agora mesmo!
+            </p>
+
+            {/* 💎 BOTÃO ELEGANTE: "CRIAR MEU APP" (COM REGRA DE CONTRASTE ABSOLUTA TEXTO BRANCO) */}
+            <button
+              type="button"
+              onClick={() => handleOpenAdminForm('estabelecimento')}
+              className="w-full max-w-xs py-3.5 px-6 rounded-lg bg-gradient-to-r from-[#087A2A] via-[#20C933] to-[#38E54B] hover:brightness-105 active:scale-[0.99] text-white font-bold text-base tracking-wide transition-all flex items-center justify-center gap-2.5 cursor-pointer shadow-2xl shadow-black/60 border border-emerald-400/50 group"
+            >
+              <span className="text-white font-bold drop-shadow">Criar Meu App</span>
+              <ArrowRight className="w-4 h-4 text-white transition-transform group-hover:translate-x-1" />
+            </button>
+          </div>
         </div>
 
-        {/* 📦 CONTEÚDO DA ABA (100% DA LARGURA NO MOBILE, RESPONSIVO, SEM POLUIÇÃO) */}
-        <div className="w-full">
-          {activeTab === 'client' ? (
-            /* ABA 1: PRA VOCÊ (CLIENTE) */
-            <div className="w-full bg-slate-900 border border-slate-800 rounded-[4px] p-5 sm:p-6 space-y-4 shadow-2xl animate-fadeIn">
-              <a
-                href="https://portal.vagouapp.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-3 px-4 rounded-[4px] bg-[#20C933] hover:bg-[#1bb32d] text-white font-bold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-emerald-500/20 active:scale-98"
-              >
-                <span className="text-white font-bold">Portal de Vagas</span>
-                <ArrowRight className="w-4 h-4 text-white" />
-              </a>
-
-              {/* 🔍 LOCALIZAR DETERMINADO SALÃO ESPECÍFICO */}
-              <div className="space-y-1.5 pt-3 border-t border-slate-800">
-                <span className="text-[11px] text-slate-400 font-medium block">
-                  Procurando um salão específico? Busque pelo nome:
-                </span>
-                <QuickSalonLauncher
-                  targetApp="portal"
-                  placeholder="Digite o nome do salão (ex: dom-cavalcanti)..."
-                  actionLabel="Ver vagas"
-                />
-              </div>
-            </div>
-          ) : (
-            /* ABA 2: SEU NEGÓCIO (DONO DE ESTABELECIMENTO) */
-            <div className="w-full bg-slate-900 border border-slate-800 rounded-[4px] p-5 sm:p-6 space-y-4 shadow-2xl animate-fadeIn">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-[4px] bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
-                  <Building2 className="w-5 h-5 text-emerald-400" />
-                </div>
-                <div>
-                  <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
-                    Área do Estabelecimento
-                  </h2>
-                  <p className="text-xs text-slate-400">
-                    Cadastre seu salão ou acesse o painel de gestão.
-                  </p>
-                </div>
-              </div>
-
-              {/* BOTÃO PRINCIPAL: ABRE O FORMULÁRIO OFICIAL DO ADMIN MASTER (admvapp) */}
-              <button
-                type="button"
-                onClick={() => handleOpenAdminForm('estabelecimento')}
-                className="w-full py-3 px-4 rounded-[4px] bg-white hover:bg-slate-200 text-slate-950 font-bold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98"
-              >
-                <span>Criar Meu Negócio</span>
-                <ArrowRight className="w-4 h-4 text-slate-950" />
-              </button>
-
-              {/* ATALHO PARA MEUS NEGÓCIOS */}
-              <div className="text-center pt-2 border-t border-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setIsHubModalOpen(true)}
-                  className="text-xs text-emerald-400 hover:underline transition inline-flex items-center gap-1 cursor-pointer font-medium"
-                >
-                  <Layers className="w-3.5 h-3.5" />
-                  <span>Acessar conta ou meus estabelecimentos</span>
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+        {/* 🔀 NAVEGAÇÃO OCULTA / SEM EXIBIÇÃO */}
+        <div aria-hidden="true" className="hidden" />
 
         {/* RODAPÉ DISCRETO */}
-        <div className="mt-8 text-center text-[11px] text-slate-500">
-          <span>vagouapp.com · Todos os direitos reservados</span>
+        <div className="mt-8 text-center text-xs text-slate-300/80 drop-shadow">
+          <span>vagouapp.com</span>
         </div>
       </main>
 
@@ -143,17 +72,6 @@ export const VagouGatewayHub: React.FC = () => {
         onClose={() => setIsRegisterModalOpen(false)}
         formType={registerFormType}
       />
-
-      {/* 📦 OVERLAY DO HUB DE NEGÓCIOS & ACERVO DO USUÁRIO */}
-      {isHubModalOpen && (
-        <UserBusinessHubModal
-          onClose={() => setIsHubModalOpen(false)}
-          onOpenNewSalonRegistration={() => {
-            setIsHubModalOpen(false);
-            handleOpenAdminForm('estabelecimento');
-          }}
-        />
-      )}
     </div>
   );
 };
