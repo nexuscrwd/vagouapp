@@ -56,12 +56,12 @@ export const VagouGatewayHub: React.FC = () => {
                 : 'opacity-0 translate-y-2'
             }`}
           >
-            <p className="text-sm sm:text-base font-medium text-slate-300 drop-shadow">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight drop-shadow-[0_2px_14px_rgba(0,0,0,0.95)]">
               Seja bem vindo!
-            </p>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
-              Estamos em desenvolvimento
             </h1>
+            <p className="text-xs sm:text-sm font-normal text-slate-300/85 drop-shadow">
+              Estamos em desenvolvimento
+            </p>
           </div>
 
           {/* CHAMADA COM 'vc' E 'seu negócio' EM VERDE */}

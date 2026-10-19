@@ -4,6 +4,12 @@ Todas as alterações notáveis deste projeto serão documentadas neste arquivo 
 
 ---
 
+## [1.1.9] - 2026-10-19
+### Correção de Hierarquia Visual: Destaque Nobre para "Seja bem vindo!"
+- **Hierarquia Tipográfica Ajustada:**
+  - *"Seja bem vindo!"* promovido a título principal (`h1`), com destaque nítido, tipografia de grande porte (`text-2xl sm:text-3xl`), peso extrabold e sombra de leitura limpa.
+  - *"Estamos em desenvolvimento"* reposicionado como aviso complementar e secundário (`p`), com peso normal, tamanho discreto e tom suavizado (`text-slate-300/85`).
+
 ## [1.1.8] - 2026-10-19
 ### Simplificação Elegante do Gateway: Logo Puro, Nova Copy e Botão Sólido
 - **Logo Puro (Sem Efeitos de Blur/Glow):**
