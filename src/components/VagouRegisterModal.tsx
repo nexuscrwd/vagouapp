@@ -63,23 +63,25 @@ export const VagouRegisterModal: React.FC<VagouRegisterModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-slate-950/80 backdrop-blur-xl animate-fadeIn"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-0 bg-slate-950/90 backdrop-blur-2xl animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
         }
       }}
     >
-      {/* 🪟 APENAS O IFRAME INTERNO DO FORMULÁRIO (SEM CAIXAS EXTERNAS, SEM BOTÕES DUPLICADOS) */}
-      <iframe
-        src={srcUrl}
-        width="100%"
-        height="100%"
-        frameBorder="0"
-        allow="clipboard-write; geolocation"
-        className="w-full max-w-lg h-[560px] sm:h-[640px] lg:h-[700px] max-h-[92vh] border-0 bg-transparent rounded-3xl"
-        title="Formulário Oficial VagouApp"
-      />
+      {/* 🪟 CONTAINER COM ZERO ESPAÇAMENTO LATERAL (FULL RESPONSIVE) */}
+      <div className="w-full h-[100dvh] sm:w-full sm:max-w-xl sm:h-[720px] sm:max-h-[95vh] bg-slate-950 sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col m-0 p-0">
+        <iframe
+          src={srcUrl}
+          width="100%"
+          height="100%"
+          frameBorder="0"
+          allow="clipboard-write; geolocation"
+          className="w-full h-full flex-1 border-0 bg-slate-950 m-0 p-0"
+          title="Formulário Oficial VagouApp"
+        />
+      </div>
     </div>
   );
 };
