@@ -4,6 +4,34 @@ Todas as alterações notáveis deste projeto serão documentadas neste arquivo 
 
 ---
 
+## [1.1.30] - 2026-11-24
+### Formulário Único de Cadastro de Usuário da Tríade Vagou (v6.2 — Zero SPOF)
+- **Novos Arquivos Oficiais v6.2:**
+  - Criado `src/utils/deviceFingerprint.ts` (hash determinístico SHA-256 + `createPlacesSessionToken`).
+  - Criado `src/components/auth/TriadeUserRegisterForm.tsx` (wizard canônico de 5 fases iniciando por Celular/WhatsApp, com `check_triade_user_conflict`, `get_registration_lead_resume_rpc`, `upsert_registration_lead_rpc`, motor antifraude `check_registration_risk_rpc`, endereço inteligente e conclusão atômica com `complete_registration_lead_rpc` e `public.security_questions` `sq_1`/`sq_2`/`sq_3`).
+- **Roteamento Nativo Zero SPOF & Isolamento Dark-Only:**
+  - Adicionada classe `.vagou-cinematic-auth` em `src/index.css`.
+  - `VagouRegisterModal.tsx` e `App.tsx` (`/embed?form=usuario`) renderizam `TriadeUserRegisterForm` nativamente sem iframe, mantendo `?form=estabelecimento` estritamente no embed oficial `https://adm.vagouapp.com/embed?form=estabelecimento`.
+  - Removidas opções de iframe de cadastro de usuário no gerador de snippets de `AdminMasterSuite.tsx`.
+
+## [1.1.29] - 2026-11-24
+### Alinhamento ao Comunicado Técnico `bol-216` — Remoção de Legado & Contrato Unificado
+- **Descontinuação de Componente Legado:**
+  - Removido definitivamente `src/components/SovereignEstablishmentModalContent.tsx` (que referenciava `seunegocio.vagouapp.com` e executava insert direto sem validação de slug).
+- **Endurecimento do Contrato `VagouRegisterModal.tsx`:**
+  - Mantido fluxo único oficial via `https://adm.vagouapp.com/embed?form=estabelecimento`, com repasse opcional de `?slug=<subdomínio>`.
+  - Validação estrita de origem `event.origin === 'https://adm.vagouapp.com'` para eventos `postMessage` (`VAGOU_REDIRECT`, `SALON_MASTER_SUCCESS` e `CLOSE`), com checagem de domínio seguro `*.vagouapp.com` antes de redirecionar.
+- **Padronização de Domínio do Parceiro (`mnvapp`):**
+  - Referências legadas a `seunegocio.vagouapp.com` atualizadas para `meunegocio.vagouapp.com` / `*.vagouapp.com` e comunicado `BOL-216` registrado na base de governança.
+
+## [1.1.28] - 2026-10-20
+### Registro Permanente dos Repositórios Git Oficiais da Tríade
+- **Documentação de Governança Atualizada:**
+  - Registrados e fixados os repositórios oficiais da Tríade em `AGENTS.md`, `ARCHITECTURE.md` e `KNOWLEDGE_BASE.md`:
+    - **admin VagouApp (`adminvapp` / `admvapp`):** `https://github.com/nexuscrwd/admin.vagouapp.git`
+    - **VagouApp Oficial (`vapp`):** `https://github.com/nexuscrwd/vagouapp.git`
+    - **Portal VagouApp (`pvapp`):** `https://github.com/nexuscrwd/Portal-VagouApp.git`
+
 ## [1.1.27] - 2026-10-19
 ### Resolução Definitiva da Tela Vazia: Implementação do Componente Nativo Soberano de Cadastro
 - **Causa Raiz Exata do Problema no Iframe:**

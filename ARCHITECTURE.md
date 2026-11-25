@@ -24,9 +24,16 @@
                                  ├── technical_communiques
                                  └── audit_logs
 ```
-
+ 
+### 📦 Mapeamento de Repositórios Git
+| Sigla | Aplicação | Domínio Principal | Repositório Git |
+| :--- | :--- | :--- | :--- |
+| **`adminvapp` / `admvapp`** | Admin Master Corporativo | `adm.vagouapp.com` | `https://github.com/nexuscrwd/admin.vagouapp.git` |
+| **`vapp`** | VagouApp Oficial / Gateway | `vagouapp.com` | `https://github.com/nexuscrwd/vagouapp.git` |
+| **`pvapp`** | Portal VagouApp (Consumidor) | `portal.vagouapp.com` | `https://github.com/nexuscrwd/Portal-VagouApp.git` |
+ 
 ---
-
+ 
 ## 2. Componentes do Projeto `admvapp`
 
 1. **Gateway Hub (`vagouapp.com`):**

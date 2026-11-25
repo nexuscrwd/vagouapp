@@ -27,3 +27,11 @@
 2. `pending`: Submetido para análise cadastral pelo time do `admvapp`.
 3. `active`: Homologado e apto a receber agendamentos e publicar vagas no Radar.
 4. `suspended`: Temporariamente desativado por denúncia, inadimplência ou descumprimento de termos de uso.
+
+---
+
+## 4. Repositórios Oficiais do Ecossistema (Tríade VagouApp)
+
+- **Admin Master (`adminvapp` / `admvapp`):** `https://github.com/nexuscrwd/admin.vagouapp.git`
+- **VagouApp Oficial (`vapp`):** `https://github.com/nexuscrwd/vagouapp.git`
+- **Portal VagouApp (`pvapp`):** `https://github.com/nexuscrwd/Portal-VagouApp.git`

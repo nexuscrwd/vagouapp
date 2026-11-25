@@ -59,7 +59,7 @@ export const UserBusinessHubModal: React.FC<UserBusinessHubModalProps> = ({
   };
 
   const handleEnterSalon = (salon: Salon) => {
-    window.location.href = `https://seunegocio.vagouapp.com?salon=${salon.slug}&source=hub`;
+    window.location.href = `https://${salon.slug}.vagouapp.com?source=hub`;
   };
 
   return (
@@ -274,7 +274,7 @@ export const UserBusinessHubModal: React.FC<UserBusinessHubModalProps> = ({
                 </a>
 
                 <a
-                  href="https://seunegocio.vagouapp.com"
+                  href="https://meunegocio.vagouapp.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-3 rounded-[4px] bg-slate-950/60 border border-slate-800 hover:border-slate-700 transition flex items-center justify-between gap-2 group"

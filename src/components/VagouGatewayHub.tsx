@@ -18,6 +18,11 @@ export const VagouGatewayHub: React.FC = () => {
     setIsRegisterModalOpen(true);
   };
 
+  const suggestedSlug =
+    typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search).get('slug') || undefined
+      : undefined;
+
   return (
     <div className="relative min-h-screen w-full bg-slate-950 text-slate-100 font-['Poppins'] flex flex-col justify-center items-center p-4 sm:p-6 selection:bg-[#20C933] selection:text-white overflow-x-hidden">
       {/* 🎞️ SLIDE DE FUNDO DE SERVIÇOS DE BELEZA E SALÃO COM TRANSIÇÃO SUAVE */}
@@ -75,6 +80,7 @@ export const VagouGatewayHub: React.FC = () => {
         isOpen={isRegisterModalOpen}
         onClose={() => setIsRegisterModalOpen(false)}
         formType={registerFormType}
+        slug={suggestedSlug}
       />
     </div>
   );

@@ -291,7 +291,7 @@ export const initialInfraChecks: InfraCheck[] = [
   },
   {
     service: 'App do Parceiro (mnvapp)',
-    target: 'seunegocio.vagouapp.com',
+    target: 'meunegocio.vagouapp.com',
     status: 'operational',
     latencyMs: 25,
     lastChecked: 'Há 2 minutos',
@@ -309,13 +309,25 @@ export const initialInfraChecks: InfraCheck[] = [
 
 export const initialCommuniques: TechnicalCommunique[] = [
   {
+    id: 'bol-216',
+    code: 'BOL-216',
+    title: 'Alinhamento White-Label no Cadastro & Unificação do Cadastro de Negócio',
+    scope: 'route',
+    affectedApps: ['pvapp', 'mnvapp'],
+    impactPvapp: 'Nenhuma quebra de contrato; links para criação de estabelecimento devem direcionar ao fluxo oficial unificado (vagouapp.com / adm.vagouapp.com/embed?form=estabelecimento).',
+    impactMnvapp: 'Hierarquia White-Label em *.vagouapp.com e unificação em SalonNotFoundScreen.tsx via embed adm.vagouapp.com/embed?form=estabelecimento&slug=<subdomínio>.',
+    sqlMigration: `-- Sem alteração DDL/Schema. Alinhamento de contrato White-Label, rota /embed?form=estabelecimento&slug=<subdomínio> e origem postMessage https://adm.vagouapp.com.`,
+    publishedAt: '2026-11-24 13:12',
+    author: 'Engenharia Tríade VagouApp (mnvapp / vagouapp)',
+  },
+  {
     id: 'com-001',
     code: 'COM-2026-001',
     title: 'Adição da flag is_verified e política de auditoria em salons',
     scope: 'schema',
     affectedApps: ['pvapp', 'mnvapp'],
     impactPvapp: 'Permite filtrar e exibir o badge oficial de verificado no card do salão e dar prioridade na lista do Radar.',
-    impactMnvapp: 'Exibe status de validação no cabeçalho de seunegocio.vagouapp.com e instruções caso pendente.',
+    impactMnvapp: 'Exibe status de validação no cabeçalho de meunegocio.vagouapp.com e instruções caso pendente.',
     sqlMigration: `-- Migração Homologada no Cluster Supabase
 ALTER TABLE public.salons 
 ADD COLUMN IF NOT EXISTS is_verified boolean DEFAULT false;

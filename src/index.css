@@ -12,3 +12,11 @@
 [class*="rounded"] {
   border-radius: 4px !important;
 }
+
+/* Isolamento Dark-Only obrigatório — Formulário Único da Tríade v6.2 */
+.vagou-cinematic-auth {
+  color-scheme: dark;
+  background-color: #020617;
+  color: #f8fafc;
+}
+

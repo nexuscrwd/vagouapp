@@ -89,7 +89,7 @@ export const AdminMasterSuite: React.FC<AdminMasterSuiteProps> = ({ onBackToGate
   // Embed Code Modal State
   const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
   const [embedFormType, setEmbedFormType] = useState<
-    'estabelecimento' | 'usuario' | 'usuario_login' | 'mnv_cadastro' | 'mnv_login'
+    'estabelecimento' | 'usuario_login' | 'mnv_login'
   >('estabelecimento');
 
   // Notification Toast State
@@ -892,7 +892,7 @@ export const AdminMasterSuite: React.FC<AdminMasterSuiteProps> = ({ onBackToGate
                   Auditoria do Radar de Vagas Relâmpago
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                  Horários ociosos anunciados por parceiros em seunegocio.vagouapp.com com transmissão para portal.vagouapp.com.
+                  Horários ociosos anunciados por parceiros em meunegocio.vagouapp.com com transmissão para portal.vagouapp.com.
                 </p>
               </div>
 
@@ -982,7 +982,7 @@ export const AdminMasterSuite: React.FC<AdminMasterSuiteProps> = ({ onBackToGate
                   Auditoria Global de Agendamentos
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                  Transações e reservas originadas em portal.vagouapp.com concluídas nos salões parceiros de seunegocio.vagouapp.com.
+                  Transações e reservas originadas em portal.vagouapp.com concluídas nos salões parceiros de meunegocio.vagouapp.com.
                 </p>
               </div>
 
@@ -1496,7 +1496,7 @@ zone_name = "vagouapp.com"`}
                   <textarea
                     rows={2}
                     required
-                    placeholder="Como o seunegocio.vagouapp.com deve reagir..."
+                    placeholder="Como o meunegocio.vagouapp.com deve reagir..."
                     value={newCommunique.impactMnvapp}
                     onChange={(e) => setNewCommunique({ ...newCommunique, impactMnvapp: e.target.value })}
                     className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-[4px] text-white focus:outline-none focus:border-emerald-500"
@@ -1560,7 +1560,7 @@ zone_name = "vagouapp.com"`}
             <div className="space-y-4 text-xs">
               <div>
                 <label className="text-slate-400 font-medium block mb-1.5">Selecione o Formulário Oficial:</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <button
                     type="button"
                     onClick={() => setEmbedFormType('estabelecimento')}
@@ -1574,17 +1574,6 @@ zone_name = "vagouapp.com"`}
                   </button>
                   <button
                     type="button"
-                    onClick={() => setEmbedFormType('usuario')}
-                    className={`p-2.5 rounded-[4px] border text-left transition cursor-pointer ${
-                      embedFormType === 'usuario'
-                        ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-bold'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    Usuário - Cadastro de Cliente
-                  </button>
-                  <button
-                    type="button"
                     onClick={() => setEmbedFormType('usuario_login')}
                     className={`p-2.5 rounded-[4px] border text-left transition cursor-pointer ${
                       embedFormType === 'usuario_login'
@@ -1593,17 +1582,6 @@ zone_name = "vagouapp.com"`}
                     }`}
                   >
                     Usuário - Login de Cliente
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setEmbedFormType('mnv_cadastro')}
-                    className={`p-2.5 rounded-[4px] border text-left transition cursor-pointer ${
-                      embedFormType === 'mnv_cadastro'
-                        ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-bold'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    Parceiro - Cadastro Meu Negócio
                   </button>
                   <button
                     type="button"
@@ -1619,13 +1597,13 @@ zone_name = "vagouapp.com"`}
                 </div>
               </div>
 
-              {/* CALLOUT: SINGLE SOURCE OF TRUTH */}
+              {/* CALLOUT: SINGLE SOURCE OF TRUTH & ZERO SPOF v6.2 */}
               <div className="p-3.5 rounded-[4px] bg-slate-950 border border-slate-800 flex items-start gap-2.5">
                 <AlertCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <strong className="text-white font-bold block">Single Source of Truth</strong>
+                  <strong className="text-white font-bold block">Single Source of Truth &amp; Zero SPOF (v6.2)</strong>
                   <p className="text-slate-300 leading-relaxed text-[11px]">
-                    Ao utilizar este iframe, qualquer alteração cadastral, novos campos ou regras de validação aplicadas aqui no Admin são refletidas imediatamente em <strong>vagouapp.com</strong>, <strong>portal.vagouapp.com</strong> e <strong>seunegocio.vagouapp.com</strong>.
+                    O cadastro de <strong>estabelecimento</strong> permanece unificado via iframe oficial (<code>?form=estabelecimento</code>). Já o cadastro de <strong>usuário</strong> segue o padrão nativo <code>TriadeUserRegisterForm</code> (v6.2) sem iframe, garantindo resiliência direta no Supabase compartilhado.
                   </p>
                 </div>
               </div>
@@ -1633,7 +1611,7 @@ zone_name = "vagouapp.com"`}
               {/* CÓDIGO SNIPPET */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400 font-medium">Copie e cole este iframe no portal.vagouapp.com, seunegocio.vagouapp.com ou vagouapp.com:</span>
+                  <span className="text-slate-400 font-medium">Copie e cole este iframe no portal.vagouapp.com, meunegocio.vagouapp.com ou vagouapp.com:</span>
                   <button
                     type="button"
                     onClick={() => {

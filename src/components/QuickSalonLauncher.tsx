@@ -7,7 +7,7 @@ import { fetchClientSalons } from '../lib/supabase';
 interface QuickSalonLauncherProps {
   onSelectSalon?: (salon: Salon) => void;
   className?: string;
-  targetApp?: 'portal' | 'seunegocio';
+  targetApp?: 'portal' | 'meunegocio' | 'seunegocio';
   placeholder?: string;
   actionLabel?: string;
 }
@@ -15,7 +15,7 @@ interface QuickSalonLauncherProps {
 export const QuickSalonLauncher: React.FC<QuickSalonLauncherProps> = ({
   onSelectSalon,
   className = '',
-  targetApp = 'seunegocio',
+  targetApp = 'meunegocio',
   placeholder,
   actionLabel,
 }) => {
@@ -90,7 +90,7 @@ export const QuickSalonLauncher: React.FC<QuickSalonLauncherProps> = ({
     const baseUrl =
       targetApp === 'portal'
         ? 'https://portal.vagouapp.com'
-        : 'https://seunegocio.vagouapp.com';
+        : 'https://meunegocio.vagouapp.com';
     window.location.href = `${baseUrl}?salon=${salon.slug}&source=gateway`;
   };
 
@@ -107,7 +107,7 @@ export const QuickSalonLauncher: React.FC<QuickSalonLauncherProps> = ({
         const baseUrl =
           targetApp === 'portal'
             ? 'https://portal.vagouapp.com'
-            : 'https://seunegocio.vagouapp.com';
+            : 'https://meunegocio.vagouapp.com';
         window.location.href = `${baseUrl}?salon=${sanitizedSlug}&source=gateway`;
       }
     } else if (e.key === 'Escape') {

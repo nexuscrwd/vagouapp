@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { VagouGatewayHub } from './components/VagouGatewayHub';
 import { AdminMasterSuite } from './components/AdminMasterSuite';
+import { TriadeUserRegisterForm } from './components/auth/TriadeUserRegisterForm';
 
 export const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<'gateway' | 'admin'>(() => {
@@ -25,6 +26,24 @@ export const App: React.FC = () => {
       new URLSearchParams(window.location.search).get('embed') === 'true');
 
   if (isEmbed) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const embedForm = urlParams.get('form') || 'estabelecimento';
+
+    if (embedForm === 'usuario' || embedForm === 'mnv_cadastro') {
+      return (
+        <div className="min-h-screen w-full bg-slate-950 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <TriadeUserRegisterForm
+            origin="admvapp"
+            bypassAntifraud={false}
+            salonId={urlParams.get('salonId') || undefined}
+            salonName={urlParams.get('salonName') || undefined}
+            salonSlug={urlParams.get('slug') || undefined}
+            variant="card"
+          />
+        </div>
+      );
+    }
+
     const search = window.location.search || '?form=estabelecimento';
     return (
       <div className="relative w-screen h-screen bg-slate-950 overflow-hidden flex items-center justify-center">

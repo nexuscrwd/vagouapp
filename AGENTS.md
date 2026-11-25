@@ -5,8 +5,13 @@
 - **Papel na Tríade:** Painel de Admin Master Corporativo, Soberano na Governança, Moderação de Estabelecimentos, Auditoria Cadastral e Infraestrutura/DNS.
 - **Ecossistema:** Tríade VagouApp compartilhando o mesmo cluster Supabase.
   1. `pvapp` (portal.vagouapp.com) — Aplicativo do Consumidor / Marketplace (Radar de vagas e agendamento).
-  2. `mnvapp` (seunegocio.vagouapp.com) — Aplicativo do Parceiro (Gestão diária de agenda, serviços e equipe do salão).
+  2. `mnvapp` (meunegocio.vagouapp.com & *.vagouapp.com) — Aplicativo do Parceiro (Gestão diária de agenda, serviços e equipe do salão).
   3. `admvapp` (adm.vagouapp.com) — Este projeto. Soberano na moderação, governança master e emissão de comunicados técnicos.
+
+### 📦 Repositórios Git Oficiais do Ecossistema
+- **admin VagouApp (`adminvapp` / `admvapp`):** `https://github.com/nexuscrwd/admin.vagouapp.git`
+- **VagouApp Oficial (`vapp`):** `https://github.com/nexuscrwd/vagouapp.git`
+- **PortalVagouApp (`pvapp`):** `https://github.com/nexuscrwd/Portal-VagouApp.git`
 
 ---
 
